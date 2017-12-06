@@ -14,3 +14,7 @@
 (defn rand-int
   [n]
   (biginteger (rand n)))
+
+(defn rand-vec
+  [n max-range]
+  (repeatedly n #(rand-int max-range)))

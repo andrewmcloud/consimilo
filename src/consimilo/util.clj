@@ -1,16 +1,21 @@
-(ns consimilo.util
-  (:require [clojure.core.matrix :as m]))
+(ns consimilo.util)
 
-(m/set-current-implementation :vectorz)
-
-(defn- elementwise
-  [f, vec, k]
-  (m/emap! (fn [e] (f (int e) k)) vec))
-
-(defn elementwise-and
+(defn scalar-and
   [vec, k]
-  (m/emap (fn [e] (.and (biginteger e) (biginteger k))) vec))
+  (map (fn [e] (.and e (biginteger k))) vec))
 
-(defn elementwise-mod
+(defn scalar-mod
   [vec, k]
-  (elementwise mod vec k))
+  (map #(.mod % (biginteger k)) vec))
+
+(defn scalar-mul
+  [vec, k]
+  (map #(.multiply % (biginteger k)) vec))
+
+(defn elementwise-add
+  [v1, v2]
+  (map #(.add %1 %2) v1 v2))
+
+(defn elementwise-min
+  [v1, v2]
+  (map #(.min %1 %2) v1 v2))

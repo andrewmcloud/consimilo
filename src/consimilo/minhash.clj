@@ -1,50 +1,53 @@
 (ns consimilo.minhash
-  (:require [clojure.core.matrix :as m]
-            [consimilo.random-seed :refer [set-random-seed! rand-int]]
+  (:require [consimilo.random-seed :refer [set-random-seed! rand-vec]]
             [consimilo.sha1 :refer [get-hash-int]]
-            [consimilo.util :refer [elementwise-and elementwise-mod]]
+            [consimilo.util :refer [scalar-and
+                                    scalar-mod
+                                    scalar-mul
+                                    elementwise-add
+                                    elementwise-min]]
             [clojure.core :exclude [rand-int]]))
-
-(m/set-current-implementation :vectorz)
 
 (def mersenne (biginteger (- (bit-shift-left 1 61) 1)))
 (def max-hash (biginteger (- (bit-shift-left 1 32) 1)))
-(def hash-range (biginteger (bit-shift-left 1 32)))
 (def seed 1)
-(def perms 16)
+(def perms 4)
 
 
-(defn- init_hashvalues
+(defn- init-hashvalues
   []
-  (-> (m/new-vector perms)
-      (m/fill 1)
-      (m/mul max-hash)))
+  (->> (vec (replicate perms (biginteger 1)))
+       (map #(.multiply mersenne %))))
 
 (defn- build-permutations
-  [num-perm]
-  (let [shape [2, num-perm]]
-    (set-random-seed! seed)
-    (m/compute-matrix shape (fn [_ _] (rand-int mersenne)))))
+  []
+  (set-random-seed! seed)
+  (-> (assoc {} :a (rand-vec perms mersenne))
+      (assoc :b (rand-vec perms mersenne))))
 
 (defn update-minhash
   [hashvalues bt]
-  (let [permutations (build-permutations perms)
+  (print "update-minhash")
+  (let [permutations (build-permutations)
         hv (get-hash-int bt)
-        a (m/get-row permutations 0)
-        b (m/get-row permutations 1)
-        phv (elementwise-and (elementwise-mod (m/add (m/emul! a hv) b) mersenne) max-hash)]
-    (m/emap! (fn [a b] (min a b)) phv hashvalues)))
+        a (:a permutations)
+        b (:b permutations)]
+    (-> (scalar-mul a hv)
+        (elementwise-add b)
+        (scalar-mod mersenne)
+        (scalar-and max-hash)
+        (elementwise-min hashvalues))))
 
 (defn build-minhash
-  ([byte-vec]
-   (build-minhash (init_hashvalues) byte-vec))
+  ([bt-vec]
+   (build-minhash bt-vec (init-hashvalues)))
 
-  ([hashvalues [bytes &rest]]
-   (if (nil? bytes)
+  ([[bt & rest] hashvalues]
+   (print hashvalues)
+   (if (nil? bt)
      hashvalues
-     (recur (update-minhash hashvalues bytes) rest))))
-
+     (recur (update-minhash hashvalues bt) rest))))
 
 (defn test-minhash
   []
-  (build-minhash ["andrew" "christina" "david"]))
+  (build-minhash ["a" "b" "d"]))
