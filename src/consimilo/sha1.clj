@@ -1,14 +1,18 @@
-(ns consimilo.sha1)
+(ns consimilo.sha1
+  (:import (java.security MessageDigest)))
 
 (defn- get-hash
+  "Returns 'type' hash (ex: sha1) for data"
   [type data]
-  (.digest (java.security.MessageDigest/getInstance type) (.getBytes data)))
+  (.digest (MessageDigest/getInstance type) (.getBytes data)))
 
 (defn- sha1-hash
+  "Returns the sha1 hash of data"
   [data]
   (get-hash "sha1" data))
 
-(defn get-hash-int
+(defn get-hash-biginteger
+  "Converts the sha1 hash into a Java BigInteger"
   [data]
   (->> (sha1-hash data)
     biginteger))
