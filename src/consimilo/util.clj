@@ -19,3 +19,13 @@
 (defn elementwise-min
   [v1, v2]
   (map #(.min %1 %2) v1 v2))
+
+(defn- count-equal
+  [v1 v2]
+  (->> (map #(.equals %1 %2) v1 v2)
+       (filter true?)
+       (count)))
+
+(defn jaccard
+  [self other]
+  (/ (count-equal self other) (count self)))

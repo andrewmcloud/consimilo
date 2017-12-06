@@ -5,13 +5,14 @@
                                     scalar-mod
                                     scalar-mul
                                     elementwise-add
-                                    elementwise-min]]
+                                    elementwise-min
+                                    jaccard]]
             [clojure.core :exclude [rand-int]]))
 
 (def mersenne (biginteger (- (bit-shift-left 1 61) 1)))
 (def max-hash (biginteger (- (bit-shift-left 1 32) 1)))
 (def seed 1)
-(def perms 4)
+(def perms 128)
 
 
 (defn- init-hashvalues
@@ -25,11 +26,12 @@
   (-> (assoc {} :a (rand-vec perms mersenne))
       (assoc :b (rand-vec perms mersenne))))
 
+(defonce permutations (build-permutations))
+
 (defn update-minhash
   [hashvalues bt]
   (print "update-minhash")
-  (let [permutations (build-permutations)
-        hv (get-hash-int bt)
+  (let [hv (get-hash-int bt)
         a (:a permutations)
         b (:b permutations)]
     (-> (scalar-mul a hv)
@@ -43,11 +45,6 @@
    (build-minhash bt-vec (init-hashvalues)))
 
   ([[bt & rest] hashvalues]
-   (print hashvalues)
    (if (nil? bt)
      hashvalues
-     (recur (update-minhash hashvalues bt) rest))))
-
-(defn test-minhash
-  []
-  (build-minhash ["a" "b" "d"]))
+     (recur rest (update-minhash hashvalues bt)))))
