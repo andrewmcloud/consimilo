@@ -1,31 +1,38 @@
 (ns consimilo.util)
 
 (defn scalar-and
+  "performs a scalar bitwise on each element of vec and k"
   [vec, k]
   (map (fn [e] (.and e (biginteger k))) vec))
 
 (defn scalar-mod
+  "performs a scalar modulus on each element of vec and k"
   [vec, k]
   (map #(.mod % (biginteger k)) vec))
 
 (defn scalar-mul
+  "performs a scalar multiply on each element of vec and k"
   [vec, k]
   (map #(.multiply % (biginteger k)) vec))
 
 (defn elementwise-add
+  "performs elementwise addition betwen vectors v1 and v1"
   [v1, v2]
   (map #(.add %1 %2) v1 v2))
 
 (defn elementwise-min
+  "performs elementwise minimum between vectors v1 and v2"
   [v1, v2]
   (map #(.min %1 %2) v1 v2))
 
-(defn- count-equal
+(defn- intersection-ct
+  "counts the intersection between vectors v1 and v2"
   [v1 v2]
   (->> (map #(.equals %1 %2) v1 v2)
        (filter true?)
        (count)))
 
 (defn jaccard
+  "performs jaccard on vectors self and other"
   [self other]
-  (/ (count-equal self other) (count self)))
+  (/ (intersection-ct self other) (count self)))

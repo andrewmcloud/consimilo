@@ -16,9 +16,13 @@
   ([n] (* n (rand))))
 
 (defn rand-biginteger
+  "returns a random number of type BigInteger, may be seeded by calling set-random-seed! prior
+  to calling rand-biginteger"
   [n]
   (biginteger (rand n)))
 
 (defn rand-vec
+  "returns a vector of length n random numbers range [0 - max-range], may be seeded by calling
+  set-random-seed! prior to calling rand-biginteger"
   [n max-range]
   (repeatedly n #(rand-biginteger max-range)))

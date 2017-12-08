@@ -11,35 +11,38 @@
 (def minhash-3 (build-biginteger-coll '(1 2 3 4 5 4 3 2 1)))
 
 (deftest init-hashvalues-test
-  (testing "init-hashvalues"
-    (let [private-init-hashvals #'consimilo.minhash/init-hashvalues
-          hashvals (private-init-hashvals)]
+  (let [private-init-hashvals #'consimilo.minhash/init-hashvalues
+        hashvals (private-init-hashvals)]
+    (testing "init-hahsvalues returns a collection of mersenne primes"
       (is (= mersenne (first hashvals)))
+      (is (= mersenne (last hashvals))))
+    (testing "init-hashvalues returns a collection of type BigInteger"
       (is (= true (instance? BigInteger (first hashvals))))
-      (is (= true (instance? BigInteger (last hashvals))))
+      (is (= true (instance? BigInteger (last hashvals)))))
+    (testing "init-hashvalues returns a collection of length perms"
       (is (= perms (count hashvals))))))
 
 (deftest build-permutations-test
-  (testing "build-permutations"
-    (let [private-build-permutations #'consimilo.minhash/build-permutations
-          private-count-equal #'consimilo.util/count-equal
-          p (private-build-permutations)]
+  (let [private-build-permutations #'consimilo.minhash/build-permutations
+        private-intersection-ct #'consimilo.util/intersection-ct
+        p (private-build-permutations)]
+    (testing "keys :a and :b are not nil in permutations map"
       (is (not (nil? (:a p))))
-      (is (not (nil? (:b p))))
+      (is (not (nil? (:b p)))))
+    (testing "keys :a and :b are collections of length perms"
       (is (= perms (count (:a p))))
-      (is (= perms (count (:b p))))
-      (is (not= perms (private-count-equal (:a p) (:b p)))))))
-
-(deftest update-minhash-test
-  (testing "update-minhash"))
+      (is (= perms (count (:b p)))))
+    (testing "keys :a and :b are unique collections"
+      (is (not= perms (private-intersection-ct (:a p) (:b p)))))))
 
 (deftest build-minhash-test
-  (testing "build-minhash"
-    (let [minhash (build-minhash ["my" "name" "is" "andrew"])]
-      (is (= perms (count minhash)))
+  (let [minhash (build-minhash ["my" "name" "is" "andrew"])]
+    (testing "resulting minhash is length perms"
+      (is (= perms (count minhash))))
+    (testing "elements in minhash collection are of type minhash"
       (is (= true (instance? BigInteger (first minhash))))
       (is (= true (instance? BigInteger (last minhash)))))))
 
 (deftest merge-minhash-test
-  (testing "merge-minhash"
+  (testing "testing merging two minhash vectors together."
     (is (= minhash-3 (merge-minhash minhash-1 minhash-2)))))

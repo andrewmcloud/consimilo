@@ -17,16 +17,15 @@
 (defn- init-hashvalues
   "initializes minhash signature to infinity"
   []
-  (->> (vec (replicate perms (biginteger 1)))
-       (map #(.multiply mersenne %))))
+  (vec (repeat perms mersenne)))
 
 (defn- build-permutations
   "builds seeded random number populated vectors to simulate
    the vector permutations a and b"
   []
   (set-random-seed! seed)
-  (-> (assoc {} :a (rand-vec perms mersenne))
-      (assoc :b (rand-vec perms mersenne))))
+  (assoc {} :a (rand-vec perms mersenne)
+            :b (rand-vec perms mersenne)))
 
 ;; build seeded vector permutations once. They are the same for every minhash
 ;; which allows incremental minhashing a single vector at a time.

@@ -11,41 +11,51 @@
 (def big-coll-3 [(biginteger 3) (biginteger 3) (biginteger 2)])
 
 (deftest scalar-and-test
-  (testing "scalar and"
-    (let [result (scalar-and big-coll-1 2)]
-      (is (= '(2 2 2) result))
-      (is (= true (instance? BigInteger (first result)))))))
+  (let [result (scalar-and big-coll-1 2)]
+    (testing "functionality of scalar-and"
+      (is (= '(2 2 2) result)))
+    (testing "scalar-and returns collection of type BigInteger"
+      (is (= true (instance? BigInteger (first result))))
+      (is (= true (instance? BigInteger (last result)))))))
 
 (deftest scalar-mod-test
-  (testing "scalar mod"
-    (let [result (scalar-mod big-coll-1 2)]
-      (is (= '(1 1 1) result))
-      (is (= true (instance? BigInteger (first result)))))))
+  (let [result (scalar-mod big-coll-1 2)]
+    (testing "functionality of scalar-mod"
+      (is (= '(1 1 1) result)))
+    (testing "scalar-mod returns collection of type BigInteger"
+      (is (= true (instance? BigInteger (first result))))
+      (is (= true (instance? BigInteger (last result)))))))
 
 (deftest scalar-mul-test
-  (testing "scalar mul"
-    (let [result (scalar-mul big-coll-1 3)]
-      (is (= '(9 9 9) result))
-      (is (= true (instance? BigInteger (first result)))))))
+  (let [result (scalar-mul big-coll-1 3)]
+    (testing "functionality of scalar-mul"
+      (is (= '(9 9 9) result)))
+    (testing "scalar-mul returns collection of type BigInteger"
+      (is (= true (instance? BigInteger (first result))))
+      (is (= true (instance? BigInteger (last result)))))))
 
 (deftest elementwise-min-test
-  (testing "elementwise min"
-    (let [result (elementwise-min big-coll-1 big-coll-2)]
-      (is (= '(3 3 3) result))
-      (is (= true (instance? BigInteger (first result)))))))
+  (let [result (elementwise-min big-coll-1 big-coll-2)]
+    (testing "functionality of elementwise-min"
+      (is (= '(3 3 3) result)))
+    (testing "elementwise-min returns collection of type BigInteger"
+      (is (= true (instance? BigInteger (first result))))
+      (is (= true (instance? BigInteger (last result)))))))
 
 (deftest elementwise-add-test
-  (testing "elementwise add"
-    (let [result (elementwise-add big-coll-1 big-coll-2)]
-      (is (= '(13 13 13) result))
-      (is (= true (instance? BigInteger (first result)))))))
+  (let [result (elementwise-add big-coll-1 big-coll-2)]
+    (testing "functionality of elementwise-add"
+      (is (= '(13 13 13) result)))
+    (testing "elementwise-add returns collection of type BigInteger"
+      (is (= true (instance? BigInteger (first result))))
+      (is (= true (instance? BigInteger (last result)))))))
 
-(deftest count-equal-test
-  (testing "count-equal"
-    (let [private-count-equal #'consimilo.util/count-equal]
-      (is (= 2 (private-count-equal big-coll-1 big-coll-3))))))
+(deftest intersection-ct-test
+  (let [private-intersection-ct #'consimilo.util/intersection-ct]
+    (testing "intersection-ct functionality"
+      (is (= 2 (private-intersection-ct big-coll-1 big-coll-3))))))
 
 (deftest jaccard-test
-  (testing "jaccard"
+  (testing "jaccard functionality"
     (is (= 0 (jaccard big-coll-1 big-coll-2))
         (= 2/3 (jaccard big-coll-1 big-coll-3)))))

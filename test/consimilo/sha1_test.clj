@@ -3,5 +3,6 @@
             [consimilo.sha1 :refer :all]))
 
 (deftest get-hash-biginteger-test
-  (is (= true (instance? BigInteger (get-hash-biginteger "andrew")))))
+  (testing "get-hash-biginteger returns type BigInteger"
+    (is (= true (instance? BigInteger (get-hash-biginteger "andrew"))))))
 
