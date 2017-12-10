@@ -1,4 +1,4 @@
-(ns consimilo.util)
+(ns consimilo.minhash-util)
 
 (defn scalar-and
   "performs a scalar bitwise on each element of vec and k"

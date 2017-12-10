@@ -24,7 +24,7 @@
 
 (deftest build-permutations-test
   (let [private-build-permutations #'consimilo.minhash/build-permutations
-        private-intersection-ct #'consimilo.util/intersection-ct
+        private-intersection-ct #'consimilo.minhash-util/intersection-ct
         p (private-build-permutations)]
     (testing "keys :a and :b are not nil in permutations map"
       (is (not (nil? (:a p))))

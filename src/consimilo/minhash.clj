@@ -1,12 +1,12 @@
 (ns consimilo.minhash
   (:require [consimilo.random-seed :refer [set-random-seed! rand-vec]]
             [consimilo.sha1 :refer [get-hash-biginteger]]
-            [consimilo.util :refer [scalar-and
-                                    scalar-mod
-                                    scalar-mul
-                                    elementwise-add
-                                    elementwise-min
-                                    jaccard]]
+            [consimilo.minhash-util :refer [scalar-and
+                                            scalar-mod
+                                            scalar-mul
+                                            elementwise-add
+                                            elementwise-min
+                                            jaccard]]
             [clojure.core :exclude [rand-int]]))
 
 (def mersenne (biginteger (- (bit-shift-left 1 61) 1)))
