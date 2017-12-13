@@ -38,6 +38,14 @@
   [xs x]
   (Collections/binarySearch xs x compare))
 
+(defn tree-keys
+  [trees]
+  (mapv #(keyword (str %)) (range trees)))
+
+(defn tree-key
+  [tree]
+  (keyword (str tree)))
+
 (defn func-search
   ([func j]
    (func-search func j 0))

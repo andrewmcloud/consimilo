@@ -4,7 +4,8 @@
                                         build-hashtables
                                         build-sorted-hashtables
                                         slice-minhash
-                                        func-search]]))
+                                        func-search
+                                        tree-keys]]))
 
 
 (def perms 128) ;;move to config
@@ -58,19 +59,19 @@
       (swap! mighty-atom assoc-in [:sorted-hash])))
 
 (defn- query-fn
-  [hashtable, sorted, min-slice]
-  (let [i (func-search (count sorted) (fn [x] (get sorted x) >= min-slice))]
-    (if (and (< i (count hashtable)) (= (get sorted i) min-slice))
-      (loop))))
-
+  [min-slice, tk]
+  (let [sorted (get-in @mighty-atom [:sorted-hash tk])
+        hashtable (get-in @mighty-atom [:hashtables tk])
+        i (func-search (count sorted) (fn [x] (get sorted x) >= min-slice))]
+    (if (and (< i (count sorted)) (= (get sorted i) min-slice))
+      (loop [coll []]
+        (if (and (> (count sorted)))
+          true)))))
 
 (defn- _query
   [minhash r]
-  (map query-fn (:hashtables @mighty-atom)
-                (:sorted-hash @mighty-atom)
-                (slice-minhash minhash hashranges)))
-
-
+  (map query-fn (slice-minhash minhash hashranges)
+                (tree-keys trees)))
 
 (defn query
   ;;TODO: implement
