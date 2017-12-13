@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module cursive.leiningen.project.LeiningenProjectsManager.displayName="consimilo:0.1.0-SNAPSHOT" cursive.leiningen.project.LeiningenProjectsManager.isLeinModule="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/base+system+user+dev/classes" />
     <output-test url="file://$MODULE_DIR$/target/base+system+user+dev/classes" />
     <exclude-output />
@@ -13,7 +13,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Leiningen: cider/cider-nrepl:0.14.0" level="project" />
     <orderEntry type="library" name="Leiningen: clj-antlr:0.2.3" level="project" />
     <orderEntry type="library" name="Leiningen: clojure-complete:0.2.4" level="project" />
     <orderEntry type="library" name="Leiningen: fipp:0.6.6" level="project" />
@@ -37,8 +36,6 @@
     <orderEntry type="library" name="Leiningen: org.clojure/data.codec:0.1.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/tools.macro:0.1.5" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/tools.nrepl:0.2.12" level="project" />
-    <orderEntry type="library" name="Leiningen: org.tcrawley/dynapath:0.2.4" level="project" />
-    <orderEntry type="library" name="Leiningen: pjstadig/humane-test-output:0.8.0" level="project" />
     <orderEntry type="library" name="Leiningen: robert/hooke:1.3.0" level="project" />
     <orderEntry type="library" name="Leiningen: us.bpsm/edn-java:0.4.7" level="project" />
     <orderEntry type="library" name="Leiningen: venantius/glow:0.1.4" level="project" />
