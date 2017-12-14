@@ -63,7 +63,7 @@
   [min-slice, tk]
   (let [sorted (get-in @mighty-atom [:sorted-hash tk])
         hashtable (get-in @mighty-atom [:hashtables tk])
-        i (func-search (count sorted) (fn [x] (get sorted x) >= min-slice))]
+        i (func-search (count sorted) (fn [x] (>= (compare (get sorted x) min-slice) 0)))]
     (if (and (< i (count sorted)) (= (get sorted i) min-slice))
       (take-while #(= (get sorted %) min-slice) (drop i sorted)))))
 

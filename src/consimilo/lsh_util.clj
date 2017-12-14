@@ -6,7 +6,6 @@
   [k trees]
   (map #(vector (* % k) (* (inc %) k)) (range trees)))
 
-;;returns number of buckets
 (defn get-range
   "Total number of ranges for given `k` and `trees`."
   [k trees]
@@ -17,13 +16,11 @@
   [i]
   (keyword (str i)))
 
-;;builds hashtables data structure - {1: {} 2: {} ... trees: {}}
 (defn build-hashtables
   "Creates map from keywords for 0 to `trees` to {}."
   [trees]
   (zipmap (map keyword-int (range trees)) (repeat {})))
 
-;;builds sorted-hashtables data structure - {1: [] 2: [] ... trees: []}
 (defn build-sorted-hashtables
   "Creates map from keywords for 0 to `trees` to []."
   [trees]
@@ -52,11 +49,9 @@
   ([pred j]
    (pred-search pred j 0))
   ([pred j i]
-   (println i j)
    (if (>= i j)
      i
-     (let [h (int (+ i (/ (- j i)) 2))]
-       (println h)
+     (let [h (int (+ i (/ (- j i) 2)))]
        (if-not (pred h)
          (recur pred j (inc h))
          (recur pred h i))))))

@@ -48,7 +48,8 @@
     (is (= [:0 :1 :2]
            (tree-keys 3)))))
 
-(deftest func-search-test
+(deftest pred-search-test
   (testing "search for min"
-    (is (= 0
-           (pred-search #(>= % 5) 10)))))
+    (let [sorted-vec [[0 1 2] [1 2 3] [2 3 4] [3 4 5] [4 5 6] [5 6 7] [6 7 8] [7 8 9] [8 9 0]]]
+      (is (= 2
+           (pred-search #(>= (compare (get sorted-vec %) [2 3 4]) 0) (count sorted-vec)))))))
