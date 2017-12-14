@@ -9,8 +9,8 @@
                                             jaccard]]
             [clojure.core :exclude [rand-int]]))
 
-(def mersenne (biginteger (- (bit-shift-left 1 61) 1)))
-(def max-hash (biginteger (- (bit-shift-left 1 32) 1)))
+(def mersenne (biginteger (dec (bit-shift-left 1 61))))
+(def max-hash (biginteger (dec (bit-shift-left 1 32))))
 (def seed 1)
 (def perms 128)
 
@@ -24,8 +24,8 @@
    the vector permutations a and b"
   []
   (set-random-seed! seed)
-  (assoc {} :a (rand-vec perms mersenne)
-            :b (rand-vec perms mersenne)))
+  {:a (rand-vec perms mersenne)
+   :b (rand-vec perms mersenne)})
 
 ;; build seeded vector permutations once. They are the same for every minhash
 ;; which allows incremental minhashing a single vector at a time.
