@@ -64,23 +64,17 @@
         hashtable (get-in @mighty-atom [:hashtables tk])
         i (func-search (count sorted) (fn [x] (get sorted x) >= min-slice))]
     (if (and (< i (count sorted)) (= (get sorted i) min-slice))
-      (loop [coll []]
-        (if (and (> (count sorted)))
-          true)))))
+      (take-while #(= (get sorted %) min-slice) (drop i sorted)))))
 
 (defn- _query
   [minhash r]
-  (map query-fn (slice-minhash minhash hashranges)
-                (tree-keys trees)))
+  (mapcat query-fn (slice-minhash minhash hashranges)
+                   (tree-keys trees)))
 
 (defn query
-  ;;TODO: implement
   [minhash, k]
   (if (<= 0 k)
     (print "k must be greater than zero"))
   (if (< (count minhash) (* k trees))
     (print ("the numperm of Minhash out of range")))
-  (set (map #(_query minhash %) (range k))))
-
-
-
+  (take k (mapcat #(_query minhash %) (reverse (range k)))))
