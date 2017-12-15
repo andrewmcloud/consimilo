@@ -1,6 +1,7 @@
 (ns consimilo.lsh-forest-test
   (:require [clojure.test :refer :all]
             [consimilo.lsh-forest :refer :all]
+            [consimilo.lsh-util :refer [v=v]]
             [consimilo.minhash :refer [build-minhash]]))
 
 (def minhash1 (build-minhash ["1" "2" "3"]))
@@ -37,5 +38,4 @@
   (testing "lsh forest returns best match on query"
     (map-indexed #(addlsh! (str (inc %)) %2) [minhash1 minhash2 minhash3])
     (index!)
-    (is (= minhash2
-           (query minhash1 1)))))
+    (is (true? (v=v minhash2 (query minhash1 1))))))

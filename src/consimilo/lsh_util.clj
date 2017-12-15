@@ -16,6 +16,14 @@
   [i]
   (keyword (str i)))
 
+(defn v=v
+  [v1 v2]
+  (= (compare v1 v2) 0))
+
+(defn v>=v
+  [v1 v2]
+  (>= (compare v1 v2) 0))
+
 (defn build-hashtables
   "Creates map from keywords for 0 to `trees` to {}."
   [trees]

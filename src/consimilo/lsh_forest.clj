@@ -4,8 +4,10 @@
                                         build-hashtables
                                         build-sorted-hashtables
                                         slice-minhash
-                                        func-search
-                                        tree-keys]]))
+                                        pred-search
+                                        tree-keys
+                                        v>=v
+                                        v=v]]))
 
 
 (def perms 128)                                             ;;TODO move to config
@@ -14,11 +16,13 @@
 (def hashrange (get-range k trees))
 (def hashranges (get-hashranges k trees))
 
+;;maintains state of lshforest
 (def mighty-atom (atom {:keys        {}
                         :hashtables  (build-hashtables trees)
                         :sorted-hash (build-sorted-hashtables trees)}))
 
 (defn- populate-hastables!
+  "adds each slice of the minhash to a differnt hashtable bucket"
   [key bt-arrays]
   (dorun
     (map (fn [index bt-array]
@@ -28,10 +32,12 @@
          bt-arrays)))
 
 (defn- populate-keys!
+  "associates a key to the list of minhash slices"
   [key bt-arrays]
-  (swap! mighty-atom assoc-in [:keys (keyword key)] bt-arrays))
+  (swap! mighty-atom assoc-in [:keys (keyword key)] (flatten bt-arrays)))
 
 (defn- plant-trees!
+  "populates :hashtables and :keys with the minhash slices"
   [key byte-arrays]
   (populate-hastables! key byte-arrays)
   (populate-keys! key byte-arrays))
@@ -63,19 +69,19 @@
   [min-slice, tk]
   (let [sorted (get-in @mighty-atom [:sorted-hash tk])
         hashtable (get-in @mighty-atom [:hashtables tk])
-        i (func-search (count sorted) (fn [x] (>= (compare (get sorted x) min-slice) 0)))]
-    (if (and (< i (count sorted)) (= (get sorted i) min-slice))
+        i (pred-search (count sorted) (fn [x] (v>=v (get sorted x) min-slice)))]
+    (if (and (< i (count sorted)) (v=v (get sorted i) min-slice))
       (take-while #(= (get sorted %) min-slice) (drop i sorted)))))
 
-(defn- _query
+(defn _query
   [minhash r]
   (mapcat query-fn (slice-minhash minhash hashranges)
-          (tree-keys trees)))
+                   (tree-keys trees)))
 
 (defn query
-  [minhash, k]
-  (if (<= 0 k)
+  [minhash, k-items]
+  (if (<= k-items 0)
     (print "k must be greater than zero"))
   (if (< (count minhash) (* k trees))
     (print ("the numperm of Minhash out of range")))
-  (take k (mapcat #(_query minhash %) (reverse (range k)))))
+  (take k-items (mapcat #(_query minhash %) (reverse (range k)))))
