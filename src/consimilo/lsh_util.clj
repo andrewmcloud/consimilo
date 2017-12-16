@@ -39,13 +39,17 @@
   [start end coll]
   (drop start (take end coll)))
 
+(defn coll-prefix
+  [coll k]
+  (vec (slice 0 k coll)))
+
 (defn slice-minhash
   "Slices `minhash` at `hashranges` boundaries.
   `hashranges` is sequence of sequences each with 2 elements,
   the first is the start of the bucket range and the second
   is the end of that bucket."
   [minhash hashranges]
-  (map #(slice (first %) (last %) minhash) hashranges))
+  (mapv #(slice (first %) (last %) minhash) hashranges))
 
 (defn tree-keys
   "Keywords for each integer between 0 and `trees`."

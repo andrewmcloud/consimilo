@@ -54,7 +54,7 @@
 
   ([[bt & rest] hashvalues]
    (if (nil? bt)
-     hashvalues
+     (vec hashvalues)
      (recur rest (update-minhash hashvalues bt)))))
 
 (defn merge-minhash

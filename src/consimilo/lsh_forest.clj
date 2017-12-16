@@ -4,6 +4,7 @@
                                         build-hashtables
                                         build-sorted-hashtables
                                         slice-minhash
+                                        coll-prefix
                                         pred-search
                                         tree-keys
                                         v>=v
@@ -63,20 +64,35 @@
   (swap! mighty-atom
          assoc
          :sorted-hash
-         (reduce (partial sort-tree @mighty-atom) {} (range trees))))
+         (doall (reduce (partial sort-tree @mighty-atom) {} (range trees)))))
+
+(defn- hashtable-lookup
+  [key]
+  (map #(get-in @mighty-atom [:hashtables % key]) (tree-keys trees)))
+
+(defn hashtables-lookup
+  [keys]
+  (map hashtable-lookup keys))
 
 (defn- query-fn
-  [min-slice, tk]
+  [min-slice, tk, r]
   (let [sorted (get-in @mighty-atom [:sorted-hash tk])
         hashtable (get-in @mighty-atom [:hashtables tk])
-        i (pred-search (count sorted) (fn [x] (v>=v (get sorted x) min-slice)))]
-    (if (and (< i (count sorted)) (v=v (get sorted i) min-slice))
-      (take-while #(= (get sorted %) min-slice) (drop i sorted)))))
+        min-prefix (coll-prefix min-slice r)
+        sorted-range (dec (count sorted))
+        i (pred-search (fn [x]
+                         (v>=v
+                           (coll-prefix (get sorted x) r)
+                           min-prefix))
+                       sorted-range)]
 
-(defn _query
+    (if (v=v (coll-prefix (get sorted i) r) min-prefix)
+      (vec (take-while #(v=v (coll-prefix (get sorted %) r) min-prefix) (drop i sorted))))))
+
+(defn- query-k-prefix
   [minhash r]
-  (mapcat query-fn (slice-minhash minhash hashranges)
-                   (tree-keys trees)))
+  (mapcat #(query-fn %1 %2 r) (slice-minhash minhash hashranges)
+                              (tree-keys trees)))
 
 (defn query
   [minhash, k-items]
@@ -84,4 +100,10 @@
     (print "k must be greater than zero"))
   (if (< (count minhash) (* k trees))
     (print ("the numperm of Minhash out of range")))
-  (take k-items (mapcat #(_query minhash %) (reverse (range k)))))
+  (->> (take k-items (mapcat #(query-k-prefix minhash %) (reverse (range k))))
+       hashtables-lookup
+       flatten
+       (filterv some?)))
+
+
+;TODO lookup items in mighty-atom :keys
