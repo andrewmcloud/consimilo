@@ -1,6 +1,7 @@
 (ns consimilo.minhash
   (:require [consimilo.random-seed :refer [set-random-seed! rand-vec]]
             [consimilo.sha1 :refer [get-hash-biginteger]]
+            [config.core :refer [env]]
             [consimilo.minhash-util :refer [scalar-and
                                             scalar-mod
                                             scalar-mul
@@ -9,10 +10,11 @@
                                             jaccard]]
             [clojure.core :exclude [rand-int]]))
 
-(def mersenne (biginteger (dec (bit-shift-left 1 61))))
-(def max-hash (biginteger (dec (bit-shift-left 1 32))))
-(def seed 1)
-(def perms 128)
+
+(def mersenne (biginteger (dec (bit-shift-left 1 61))))        ;; large prime
+(def max-hash (biginteger (dec (bit-shift-left 1 32))))        ;; max-hash size, used to truncate minhash values
+(def seed (:seed env))                                         ;; random number seed
+(def perms (:perms env))                                       ;; minhash dimension
 
 (defn- init-hashvalues
   "initializes minhash signature to infinity"

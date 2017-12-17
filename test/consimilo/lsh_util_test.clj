@@ -1,6 +1,7 @@
 (ns consimilo.lsh-util-test
   (:require [clojure.test :refer :all]
-            [consimilo.lsh-util :refer :all]))
+            [consimilo.lsh-util :refer :all]
+            [consimilo.lsh-query :refer :all]))
 
 (deftest get-hashranges-test
   (testing "all ranges less than k * num trees"
@@ -43,6 +44,11 @@
     (is (false? (v>=v [2 2 3] [2 3 3])))
     (is (false? (v>=v [2 3 2] [2 3 3])))))
 
+(deftest coll-prefix-test
+  (testing "get first k elements of collection"
+    (is (= [1 2 3] (coll-prefix [1 2 3 4 5] 3))))
+  (testing "get first k elements of empty collection"
+    (is (= [] (coll-prefix [] 3)))))
 
 (deftest slice-test
   (let [private-slice #'consimilo.lsh-util/slice]
@@ -67,7 +73,8 @@
            (tree-keys 3)))))
 
 (deftest pred-search-test
-  (testing "search for min"
-    (let [sorted-vec [[0 1 2] [1 2 3] [2 3 4] [3 4 5] [4 5 6] [5 6 7] [6 7 8] [7 8 9] [8 9 0]]]
+  (let [private-pred-search #'consimilo.lsh-query/pred-search
+        sorted-vec [[0 1 2] [1 2 3] [2 3 4] [3 4 5] [4 5 6] [5 6 7] [6 7 8] [7 8 9] [8 9 0]]]
+    (testing "search for min"
       (is (= 2
-           (pred-search #(>= (compare (get sorted-vec %) [2 3 4]) 0) (count sorted-vec)))))))
+           (private-pred-search #(>= (compare (get sorted-vec %) [2 3 4]) 0) (count sorted-vec)))))))

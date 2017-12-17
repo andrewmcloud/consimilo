@@ -1,5 +1,11 @@
 (ns consimilo.lsh-util
+  (:require [config.core :refer [env]])
   (:import (java.util Collections)))
+
+(defn- slice
+  "Slices from start to end non incluseive."
+  [start end coll]
+  (drop start (take end coll)))
 
 (defn get-hashranges
   "Vectors of [start stop] for each bucket for the given `k` buckets and `trees` trees."
@@ -16,11 +22,18 @@
   [i]
   (keyword (str i)))
 
+(defn tree-keys
+  "Keywords for each integer between 0 and `trees`."
+  [trees]
+  (mapv keyword-int (range trees)))
+
 (defn v=v
+  "predicate: vector1 = vector2"
   [v1 v2]
   (= (compare v1 v2) 0))
 
 (defn v>=v
+  "predicate: vector1 >= vector2"
   [v1 v2]
   (>= (compare v1 v2) 0))
 
@@ -34,12 +47,8 @@
   [trees]
   (zipmap (map keyword-int (range trees)) (repeat [])))
 
-(defn- slice
-  "Slices from start to end non incluseive."
-  [start end coll]
-  (drop start (take end coll)))
-
 (defn coll-prefix
+  "returns vector of first k items in coll"
   [coll k]
   (vec (slice 0 k coll)))
 
@@ -50,20 +59,3 @@
   is the end of that bucket."
   [minhash hashranges]
   (mapv #(slice (first %) (last %) minhash) hashranges))
-
-(defn tree-keys
-  "Keywords for each integer between 0 and `trees`."
-  [trees]
-  (mapv keyword-int (range trees)))
-
-(defn pred-search
-  "Finds the first index less then `j` for which `pred` is satisfied."
-  ([pred j]
-   (pred-search pred j 0))
-  ([pred j i]
-   (if (>= i j)
-     i
-     (let [h (int (+ i (/ (- j i) 2)))]
-       (if-not (pred h)
-         (recur pred j (inc h))
-         (recur pred h i))))))
