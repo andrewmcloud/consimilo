@@ -1,6 +1,7 @@
 (ns consimilo.lsh-state
   (:require [config.core :refer [env]]
-            [consimilo.lsh-util :refer [build-hashtables build-sorted-hashtables get-hashranges get-range]]))
+            [consimilo.lsh-util :refer [build-hashtables build-sorted-hashtables get-hashranges get-range
+                                        keyword-int]]))
 
 ;;maintains state of lshforest
 (defonce mighty-atom (atom {:keys        {}
@@ -17,7 +18,7 @@
   [key bt-arrays]
   (dorun
     (map (fn [index bt-array]
-           (let [kw (keyword (str index))]
+           (let [kw (keyword-int index)]
              (swap! mighty-atom assoc-in [:hashtables kw bt-array] key)))
          (range (:trees env))
          bt-arrays)))

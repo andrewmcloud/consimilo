@@ -28,7 +28,7 @@
 
 (defn- query-fn
   "performs a binary search to find the r-length prefix over the sorted hashtables"
-  [min-slice, tk, r]
+  [min-slice tk r]
   (let [sorted (get-in @mighty-atom [:sorted-hash tk])
         hashtable (get-in @mighty-atom [:hashtables tk])
         min-prefix (coll-prefix min-slice r)
@@ -44,21 +44,20 @@
 (defn- query-k-prefix
   "queries for the r-length prefix of each minhash slice in the forest"
   [minhash r]
-  (mapcat #(query-fn %1 %2 r) (slice-minhash minhash hashranges)
+  (mapcat #(query-fn %1 %2 r)
+          (slice-minhash minhash hashranges)
           (tree-keys trees)))
 
 (defn query
   "returns a list of the keys of the top k-items most similar to minhash"
-  [minhash, k-items]
+  [minhash k-items]
   (cond
     (<= k-items 0) (print "k must be greater than zero")
     (< (count minhash) (* k trees)) (print ("the numperm of Minhash out of range"))
-    :else (->> (range (inc k))
+    :else (->> (range k)
                reverse
-               (take k)
-               (map #(query-k-prefix minhash %))
-               (apply concat)
-               (take k-items)
+               (mapcat #(query-k-prefix minhash %))
                (hashtables-lookup (get @mighty-atom :hashtables))
                flatten
-               (filterv some?))))
+               (filter some?)
+               (take k-items))))

@@ -30,7 +30,7 @@
 (defn v=v
   "predicate: vector1 = vector2"
   [v1 v2]
-  (= (compare v1 v2) 0))
+  (zero? (compare v1 v2)))
 
 (defn v>=v
   "predicate: vector1 >= vector2"
@@ -50,7 +50,7 @@
 (defn coll-prefix
   "returns vector of first k items in coll"
   [coll k]
-  (vec (slice 0 k coll)))
+  (vec (take k coll)))
 
 (defn slice-minhash
   "Slices `minhash` at `hashranges` boundaries.
