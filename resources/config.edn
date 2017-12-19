@@ -1,0 +1,3 @@
+{:trees 8                   ;; number of trees in the lshforest
+ :perms 128                 ;; diminsions of minhash. used to calculate lshforest minhash slices
+ :seed 1}                   ;; random number generator seed used to generate minhash functions

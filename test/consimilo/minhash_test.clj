@@ -4,7 +4,7 @@
 
 (defn build-biginteger-coll
   [coll]
-  (map #(biginteger %) coll))
+  (map biginteger coll))
 
 (def minhash-1 (build-biginteger-coll '(1 2 3 4 5 6 7 8 9)))
 (def minhash-2 (build-biginteger-coll '(9 8 7 6 5 4 3 2 1)))
@@ -14,17 +14,15 @@
   (let [private-init-hashvals #'consimilo.minhash/init-hashvalues
         hashvals (private-init-hashvals)]
     (testing "init-hahsvalues returns a collection of mersenne primes"
-      (is (= mersenne (first hashvals)))
-      (is (= mersenne (last hashvals))))
+      (is (every? #(= mersenne %) hashvals)))
     (testing "init-hashvalues returns a collection of type BigInteger"
-      (is (= true (instance? BigInteger (first hashvals))))
-      (is (= true (instance? BigInteger (last hashvals)))))
+      (is (every? #(instance? BigInteger %) hashvals)))
     (testing "init-hashvalues returns a collection of length perms"
       (is (= perms (count hashvals))))))
 
 (deftest build-permutations-test
   (let [private-build-permutations #'consimilo.minhash/build-permutations
-        private-intersection-ct #'consimilo.util/intersection-ct
+        private-intersection-ct #'consimilo.minhash-util/intersection-ct
         p (private-build-permutations)]
     (testing "keys :a and :b are not nil in permutations map"
       (is (not (nil? (:a p))))
@@ -40,8 +38,8 @@
     (testing "resulting minhash is length perms"
       (is (= perms (count minhash))))
     (testing "elements in minhash collection are of type minhash"
-      (is (= true (instance? BigInteger (first minhash))))
-      (is (= true (instance? BigInteger (last minhash)))))))
+      (is (instance? BigInteger (first minhash)))
+      (is (instance? BigInteger (last minhash))))))
 
 (deftest merge-minhash-test
   (testing "testing merging two minhash vectors together."
