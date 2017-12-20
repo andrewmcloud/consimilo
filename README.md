@@ -1,36 +1,54 @@
 # consimilo
 
-FIXME: description
+Consilimo is a library for utilizing lsh-forests to find the top similar items. 
 
 ## Installation
 
-Download from http://example.com/FIXME.
+```
+lein install
+```
 
 ## Usage
 
-FIXME: explanation
+The main methods you are likely to need are all in [`core.clj`](./src/consimilo/core.clj).
+Import it with something like:
 
-    $ java -jar consimilo-0.1.0-standalone.jar [args]
+```clojure
+(ns my-awesome.namespace
+  (:require [consimilo.core :refer [add-all-to-forest query-forest]]))
+```
 
-## Options
+#### Building the forest
 
-FIXME: listing of options this app accepts.
+First you need to load all the candidate vectors into an lsh forest.
+These vectors can represent any arbitrary information (e.g. terms in document,
+metadata about users).
 
-## Examples
+Your vectors need to be in the form of:
 
-...
+```clojure
+{:label "name of thing that had this vector"
+ :vector ["some" "representation" "of" "vector"]}
+```
 
-### Bugs
+Once you have a collection of `vectors` that look like that you can call:
 
-...
+```clojure
+(def forest (add-all-to-forest vectors))
+```
 
-### Any Other Sections
-### That You Think
-### Might be Useful
+You can continue to add to this forest by passing it as the first argument to
+`add-all-to-forest` like:
 
-## License
+```clojure
+(def updated-forest (add-all-to-forest forest new-vectors))
+```
 
-Copyright © 2017 FIXME
+#### Querying the Forest
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Once you have your `forest` built you can query for the top `k` similar entries to
+a vector `v` by running:
+
+```clojure
+(query-forest forest v k)
+```
