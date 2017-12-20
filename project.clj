@@ -5,9 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [yogthos/config "0.8"]
+                 [clojure-opennlp "0.4.0"]
                  [com.novemberain/pantomime "2.9.0"]]
-  :plugins [[lein-git-deps "0.0.1-SNAPSHOT"]]
-  :git-dependencies [["https://github.com/damienstanton/stanford-corenlp.git"]]
-  :source-paths [".lein-git-deps/" "src/"]
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
