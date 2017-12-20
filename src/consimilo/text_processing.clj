@@ -1,10 +1,15 @@
 (ns consimilo.text-processing
-  (:require [corenlp :refer [tokenize]]))
+  (:require [corenlp :refer [tokenize]]
+            [pantomime.mime :refer [mime-type-of]]
+            [pantomime.extract :as extract]
+            [clojure.java.io :as io]
+            [config.core :refer [env]]
+            [clojure.tools.logging :as log])
+  (:import (java.io File)))
 
 (defn tokenize-text
   [text]
-  (->>(tokenize text)
-      (map :token)))
+  (map #(:token %) (tokenize text)))
 
 (defn shingle
   ([text-vec n]
@@ -17,3 +22,24 @@
                                      (take k)
                                      (concat [first])
                                      (apply str))))))))
+
+(defn parse-file-to-text
+  "Parse pdf calls extract/parse and catches an IndexOutOfBounds exception that is thrown by tika on rare occasion."
+  [file]
+  (try
+    (extract/parse file)
+    (catch IndexOutOfBoundsException e
+      (log/warn "Unable to extract text from pdf - filename: " (.getName file)))))
+
+(defn extract-text
+  "Return extracted text by file contnet (as `java.io.File`)."
+  [file_obj]
+  (let [file-map (parse-file-to-text file_obj)]
+    (->> (:text file-map)
+         tokenize-text
+         (assoc file-map :tokens))))
+
+
+
+
+
