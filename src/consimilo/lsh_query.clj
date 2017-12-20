@@ -1,5 +1,5 @@
 (ns consimilo.lsh-query
-  (:require [consimilo.lsh-state :refer [mighty-atom trees hashranges k]]
+  (:require [consimilo.lsh-state :refer [trees hashranges k]]
             [consimilo.lsh-util :refer [slice-minhash tree-keys coll-prefix v>=v v=v]]
             [config.core :refer [env]]))
 
@@ -28,9 +28,9 @@
 
 (defn- query-fn
   "performs a binary search to find the r-length prefix over the sorted hashtables"
-  [min-slice tk r]
-  (let [sorted (get-in @mighty-atom [:sorted-hash tk])
-        hashtable (get-in @mighty-atom [:hashtables tk])
+  [forest min-slice tk r]
+  (let [sorted (get-in @forest [:sorted-hash tk])
+        hashtable (get-in @forest [:hashtables tk])
         min-prefix (coll-prefix min-slice r)
         sorted-range (dec (count sorted))
         i (pred-search (fn [x]
@@ -43,21 +43,21 @@
 
 (defn- query-k-prefix
   "queries for the r-length prefix of each minhash slice in the forest"
-  [minhash r]
-  (mapcat #(query-fn %1 %2 r)
+  [forest minhash r]
+  (mapcat #(query-fn forest %1 %2 r)
           (slice-minhash minhash hashranges)
           (tree-keys trees)))
 
 (defn query
   "returns a list of the keys of the top k-items most similar to minhash"
-  [minhash k-items]
+  [forest minhash k-items]
   (cond
     (<= k-items 0) (print "k must be greater than zero")
     (< (count minhash) (* k trees)) (print ("the numperm of Minhash out of range"))
     :else (->> (range k)
                reverse
-               (mapcat #(query-k-prefix minhash %))
-               (hashtables-lookup (get @mighty-atom :hashtables))
+               (mapcat #(query-k-prefix forest minhash %))
+               (hashtables-lookup (get @forest :hashtables))
                flatten
                (filter some?)
                (take k-items))))
