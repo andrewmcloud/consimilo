@@ -1,7 +1,15 @@
 (ns consimilo.lsh-forest
-  (:require [consimilo.lsh-util :refer [slice-minhash tree-keys]]
-            [consimilo.lsh-state :refer [mighty-atom plant-trees! sort-tree hashranges hashrange trees]]
-            [consimilo.lsh-query :refer [query]]))
+  (:require [consimilo.lsh-util :refer [slice-minhash tree-keys build-hashtables build-sorted-hashtables]]
+            [consimilo.lsh-state :refer [plant-trees! sort-tree hashranges hashrange trees]]
+            [consimilo.lsh-query :refer [query]]
+            [config.core :refer [env]]))
+
+(defn new-forest
+  "Create new empty initialized forest structure."
+  []
+  (atom {:keys        {}
+         :hashtables  (build-hashtables (:trees env))
+         :sorted-hash (build-sorted-hashtables (:trees env))}))
 
 (defn add-lsh!
   "add minhash to lsh-forest. key must be a string, will be converted to keyword"
@@ -17,7 +25,7 @@
   (swap! forest
          assoc
          :sorted-hash
-         (into {} (doall (pmap sort-tree (tree-keys trees))))))
+         (into {} (doall (pmap (partial sort-tree forest) (tree-keys trees))))))
 
 (defn query-forest
   "search lsh-forest for top k most similar items, utilizes binary search.

@@ -19,8 +19,8 @@
 
 (defn- populate-keys!
   "associates a key to the list of minhash slices"
-  [state key bt-arrays]
-  (swap! state assoc-in [:keys (keyword key)] (flatten bt-arrays)))
+  [forest key bt-arrays]
+  (swap! forest assoc-in [:keys (keyword key)] (flatten bt-arrays)))
 
 (defn plant-trees!
   "populates :hashtables and :keys with the minhash slices"

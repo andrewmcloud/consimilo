@@ -1,15 +1,8 @@
 (ns consimilo.core
-  (:require [config.core :refer [env]]
-            [consimilo.lsh-util :refer [build-hashtables build-sorted-hashtables]]
-            [consimilo.lsh-forest :refer [add-lsh! index!]]
+  (:require
+            [consimilo.lsh-forest :refer [add-lsh! index! new-forest]]
             [consimilo.minhash :refer [build-minhash]]
             [consimilo.lsh-query :refer [query]]))
-
-(defn- new-forest
-  []
-  (atom {:keys        {}
-         :hashtables  (build-hashtables (:trees env))
-         :sorted-hash (build-sorted-hashtables (:trees env))}))
 
 (defn add-all-to-forest
   "Adds each vector in `coll` to an lsh forest and returns the forest.
@@ -20,7 +13,7 @@
   ([coll]
    (add-all-to-forest (new-forest) coll))
   ([forest coll]
-   (dorun (map #(add-lsh! forest (:label %) (build-minhash (:vector %)))))
+   (run! #(add-lsh! forest (:label %) (build-minhash (:vector %))) coll)
    (index! forest)
    forest))
 
