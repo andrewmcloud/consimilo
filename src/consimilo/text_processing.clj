@@ -1,5 +1,5 @@
 (ns consimilo.text-processing
-  (:require [corenlp :refer [tokenize]]
+  (:require [opennlp.nlp :refer [make-tokenizer]]
             [pantomime.mime :refer [mime-type-of]]
             [pantomime.extract :as extract]
             [clojure.java.io :as io]
@@ -7,9 +7,7 @@
             [clojure.tools.logging :as log])
   (:import (java.io File)))
 
-(defn tokenize-text
-  [text]
-  (map #(:token %) (tokenize text)))
+(def tokenize (make-tokenizer (clojure.java.io/resource "en-token.bin")))
 
 (defn shingle
   ([text-vec n]
@@ -36,7 +34,7 @@
   [file_obj]
   (let [file-map (parse-file-to-text file_obj)]
     (->> (:text file-map)
-         tokenize-text
+         tokenize
          (assoc file-map :tokens))))
 
 
