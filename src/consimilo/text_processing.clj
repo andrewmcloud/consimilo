@@ -32,12 +32,4 @@
 (defn extract-text
   "Return extracted text by file contnet (as `java.io.File`)."
   [file_obj]
-  (let [file-map (parse-file-to-text file_obj)]
-    (->> (:text file-map)
-         tokenize
-         (assoc file-map :tokens))))
-
-
-
-
-
+  (:text (parse-file-to-text file_obj)))

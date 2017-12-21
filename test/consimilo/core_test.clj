@@ -18,3 +18,11 @@
            (query-forest (add-all-to-forest [minhash1 minhash2 minhash3])
                          ["1" "2" "4"]
                          2)))))
+
+(deftest core-add-strings-test
+  (testing "adding several strings to forest"
+    (is (> (count (get-in @(add-strings-to-forest [{:label "1" :vector "my awesome string"}
+                                                   {:label "2" :vector "a string abot cats"}
+                                                   {:label "3" :vector "cat's aren't awesome"}])
+                          [:sorted-hash :0]))
+           0))))
