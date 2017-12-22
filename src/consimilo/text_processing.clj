@@ -21,7 +21,7 @@
                                      (concat [first])
                                      (apply str))))))))
 
-(defn parse-file-to-text
+(defn- parse-file-to-text
   "Parse pdf calls extract/parse and catches an IndexOutOfBounds exception that is thrown by tika on rare occasion."
   [file]
   (try

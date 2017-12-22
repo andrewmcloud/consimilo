@@ -38,8 +38,8 @@
   Tokens are hashed using sha1 hash and truncated at max-hash to allow hashing
   of documents with varying feature sizes. One minhash should be created for
   each document"
-  [hashvalues bt]
-  (let [hv (get-hash-biginteger bt)
+  [hashvalues feature]
+  (let [hv (get-hash-biginteger feature)
         a (:a permutations)
         b (:b permutations)]
     (-> (scalar-mul a hv)
@@ -49,15 +49,15 @@
         (elementwise-min hashvalues))))
 
 (defn build-minhash
-  "iterates through a document feature vector: ['token-1' token-2' ... 'token-n],
+  "iterates through a document feature collection: ['token-1' token-2' ... 'token-n],
   updating the minhash with each feature. Complete minhash is returned."
-  ([bt-vec]
-   (build-minhash bt-vec (init-hashvalues)))
+  ([feature-coll]
+   (build-minhash feature-coll (init-hashvalues)))
 
-  ([[bt & rest] hashvalues]
-   (if (nil? bt)
+  ([[feature & features] hashvalues]
+   (if (nil? feature)
      (vec hashvalues)
-     (recur rest (update-minhash hashvalues bt)))))
+     (recur features (update-minhash hashvalues feature)))))
 
 (defn merge-minhash
   "merges two minhashes together by taking the elementwise minimum between the two

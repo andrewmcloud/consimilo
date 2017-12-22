@@ -14,7 +14,7 @@
 
 (deftest core-query-test
   (testing "query api returns best results"
-    (is (= '("1" "2")
+    (is (= '(:1 :2)
            (query-forest (add-all-to-forest [minhash1 minhash2 minhash3])
                          ["1" "2" "4"]
                          2)))))

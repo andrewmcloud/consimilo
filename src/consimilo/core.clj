@@ -2,6 +2,7 @@
   (:require
     [consimilo.lsh-forest :refer [add-lsh! index! new-forest]]
     [consimilo.minhash :refer [build-minhash]]
+    [consimilo.minhash-util :refer [jaccard]]
     [consimilo.lsh-query :refer [query]]
     [consimilo.text-processing :refer [extract-text shingle tokenize]])
   (:import (clojure.lang IAtom)))
@@ -22,7 +23,8 @@
 (defn query-forest
   "Finds the closts `k` vectors to vector `v` stored in the `forest`."
   [forest v k]
-  (query forest (build-minhash v) k))
+  (let [minhash (build-minhash v)]
+    {:top-k (query forest minhash k) :query-hash minhash}))
 
 (defn add-strings-to-forest
   [strings & {:keys [forest shingle? n] :or {forest (new-forest) shingle? false n 3}}]
@@ -54,3 +56,16 @@
   (query-string forest
                 (extract-text file)
                 k))
+
+;(defmulti jaccard-k
+;  (fn [forest file k & kwargs] (= type)))
+
+(defn jaccard-k-file
+  [forest file k & {:keys [shingle? n] :or {shingle? false n 3}}]
+  (let [return (query-file forest file :shingle? shingle? :n n)]
+    (-> (map #(jaccard (:query-hash return) (get-in @forest [:keys %])) (:top-k return))
+        (zipmap (:top-k return)))))
+
+(defn jaccard-k-string)
+
+
