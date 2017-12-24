@@ -1,28 +1,55 @@
 (ns consimilo.core-test
   (:require [clojure.test :refer :all]
-            [consimilo.core :refer :all]))
+            [consimilo.core :refer :all]
+            [clojure.java.io :as io]))
 
-(def minhash1 {:label "1" :vector ["1" "2" "3"]})
-(def minhash2 {:label "2" :vector ["1" "2" "10"]})
-(def minhash3 {:label "3" :vector ["32" "64" "128"]})
+(def minhash1 {:id "1" :coll ["1" "2" "3"]})
+(def minhash2 {:id "2" :coll ["1" "2" "10"]})
+(def minhash3 {:id "3" :coll ["32" "64" "128"]})
+
+(def forest-from-hash (add-all-to-forest [minhash1 minhash2 minhash3]))
+(def forest-from-strings (add-strings-to-forest [{:id "1" :coll "My name is Andrew and I live in Charleston SC. I am staying home for Christmas this year."}
+                                                 {:id "2" :coll "My name is Christina and I live in West Ashley SC. I am not staying home for Christmas this year."}
+                                                 {:id "3" :coll "My name is David and I live in Summerville, SC. I am going to go to Florida for Christmas this year."}]))
 
 (deftest core-add-all-test
-  (testing "core add all returnes indexed forest"
-    (is (> (count (get-in @(add-all-to-forest [minhash1 minhash2 minhash3])
+  (testing "core add all returns indexed forest"
+    (is (> (count (get-in @forest-from-hash
                           [:sorted-hash :0]))
            0))))
 
 (deftest core-query-test
   (testing "query api returns best results"
     (is (= '(:1 :2)
-           (query-forest (add-all-to-forest [minhash1 minhash2 minhash3])
-                         ["1" "2" "4"]
-                         2)))))
+           (:top-k (query-forest forest-from-hash
+                                 ["1" "2" "4"]
+                                 2)))))
+  (testing "query-string"
+    (is (= '(:1 :2)
+           (:top-k (query-string forest-from-strings
+                                 "My name is Bonnie and I live in Charleston, SC. I am staying home for Christmas this year."
+                                 2)))))
+
+  (testing "query-file"
+    (is (= '(:1 :2)
+           (:top-k (query-file forest-from-strings
+                               (io/resource "test.txt")
+                               2))))))
 
 (deftest core-add-strings-test
   (testing "adding several strings to forest"
-    (is (> (count (get-in @(add-strings-to-forest [{:label "1" :vector "my awesome string"}
-                                                   {:label "2" :vector "a string abot cats"}
-                                                   {:label "3" :vector "cat's aren't awesome"}])
+    (is (> (count (get-in @forest-from-strings
                           [:sorted-hash :0]))
            0))))
+
+(deftest core-jaccard-k
+  (testing "calculate jaccard on top-k results, string input"
+    (is (>= (:1 (jaccard-k forest-from-strings
+                           "My name is Bonnie and I live in Charleston, SC. I am staying home for Christmas this year."
+                           1))
+            112/128)))
+  (testing "calculate jaccard on top-k results, file input"
+    (is (>= (:1 (jaccard-k forest-from-strings
+                           (io/resource "test.txt")
+                           1))
+            112/128))))

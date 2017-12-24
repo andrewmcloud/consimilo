@@ -1,4 +1,5 @@
-(ns consimilo.minhash-util)
+(ns consimilo.minhash-util
+  (:require [clojure.set :refer [intersection]]))
 
 (defn scalar-and
   "performs a scalar bitwise on each element of vec and k"
@@ -25,14 +26,14 @@
   [v1 v2]
   (map #(.min %1 %2) v1 v2))
 
-(defn- intersection-ct
-  "counts the intersection between vectors v1 and v2"
-  [v1 v2]
-  (->> (map #(.equals %1 %2) v1 v2)
-       (filter true?)
-       count))
-
 (defn jaccard
   "performs jaccard on vectors self and other"
   [self other]
-  (/ (intersection-ct self other) (count self)))
+  (/ (count (intersection (set self) (set other)))
+     (count self)))
+
+(defn zip-jaccard
+  [forest query]
+  (->> (map #(jaccard (:query-hash query) (get-in @forest [:keys %]))
+            (:top-k query))
+       (zipmap (:top-k query))))

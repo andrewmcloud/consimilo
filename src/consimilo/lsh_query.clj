@@ -60,4 +60,5 @@
                (hashtables-lookup (get @forest :hashtables))
                flatten
                (filter some?)
+               (distinct)
                (take k-items))))

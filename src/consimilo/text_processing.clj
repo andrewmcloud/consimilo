@@ -4,10 +4,9 @@
             [pantomime.extract :as extract]
             [clojure.java.io :as io]
             [config.core :refer [env]]
-            [clojure.tools.logging :as log])
-  (:import (java.io File)))
+            [clojure.tools.logging :as log]))
 
-(def tokenize (make-tokenizer (clojure.java.io/resource "en-token.bin")))
+(def tokenize (make-tokenizer (io/resource "en-token.bin")))
 
 (defn shingle
   ([text-vec n]
@@ -30,6 +29,6 @@
       (log/warn "Unable to extract text from pdf - filename: " (.getName file)))))
 
 (defn extract-text
-  "Return extracted text by file contnet (as `java.io.File`)."
+  "Return extracted text by file content (as `java.io.File`)."
   [file_obj]
   (:text (parse-file-to-text file_obj)))
