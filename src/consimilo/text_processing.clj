@@ -3,10 +3,18 @@
             [pantomime.mime :refer [mime-type-of]]
             [pantomime.extract :as extract]
             [clojure.java.io :as io]
+            [clojure.string :refer [lower-case]]
             [config.core :refer [env]]
             [clojure.tools.logging :as log]))
 
 (def tokenize (make-tokenizer (io/resource "en-token.bin")))
+
+(defn tokenize-text
+  [text]
+  (->> (lower-case text)
+       tokenize
+       set
+       vec))
 
 (defn shingle
   ([text-vec n]
@@ -14,7 +22,7 @@
   ([[first & rest] n coll]
    (let [k (dec n)]
      (if (not= k (count (take k rest)))
-       coll
+       (vec (set (map lower-case coll)))
        (recur rest n (conj coll (->> rest
                                      (take k)
                                      (concat [first])

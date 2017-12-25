@@ -4,7 +4,7 @@
     [consimilo.minhash :refer [build-minhash]]
     [consimilo.minhash-util :refer [zip-jaccard]]
     [consimilo.lsh-query :refer [query]]
-    [consimilo.text-processing :refer [extract-text shingle tokenize]])
+    [consimilo.text-processing :refer [extract-text shingle tokenize tokenize-text]])
   (:import (clojure.lang IAtom)))
 
 (defn add-all-to-forest
@@ -32,7 +32,7 @@
                      (map #(assoc % :coll
                              (if shingle?
                                (shingle (tokenize (:coll %)) n)
-                               (tokenize (:coll %))))
+                               (tokenize-text (:coll %))))
                           strings)))
 
 (defn query-string
@@ -40,7 +40,7 @@
   (query-forest forest
                 (if shingle?
                   (shingle (tokenize string) n)
-                  (tokenize string))
+                  (tokenize-text string))
                 k))
 
 (defn add-files-to-forest

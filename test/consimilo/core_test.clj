@@ -4,7 +4,7 @@
             [clojure.java.io :as io]))
 
 (def minhash1 {:id "1" :coll ["1" "2" "3"]})
-(def minhash2 {:id "2" :coll ["1" "2" "10"]})
+(def minhash2 {:id "2" :coll ["1" "3" "10"]})
 (def minhash3 {:id "3" :coll ["32" "64" "128"]})
 
 (def forest-from-hash (add-all-to-forest [minhash1 minhash2 minhash3]))
@@ -47,9 +47,9 @@
     (is (>= (:1 (jaccard-k forest-from-strings
                            "My name is Bonnie and I live in Charleston, SC. I am staying home for Christmas this year."
                            1))
-            112/128)))
+            100/128)))
   (testing "calculate jaccard on top-k results, file input"
     (is (>= (:1 (jaccard-k forest-from-strings
                            (io/resource "test.txt")
                            1))
-            112/128))))
+            100/128))))
