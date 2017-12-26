@@ -1,11 +1,21 @@
 (ns consimilo.lsh-state
   (:require [config.core :refer [env]]
-            [consimilo.lsh-util :refer [get-hashranges get-range keywordize]]))
+            [consimilo.lsh-util :refer [get-hashranges
+                                        keywordize
+                                        get-range]]))
 
-(def trees (:trees env))                         ;; number of trees in lshforest
-(def k (int (/ (:perms env) trees)))             ;; length of minhash slices
-(def hashrange (get-range k trees))              ;; range of minhash
-(def hashranges (get-hashranges k trees))        ;; vector of minhash slice lengths
+
+;; number of trees in lshforest
+(def trees (:trees env))
+
+;; length of minhash slices
+(def k (int (/ (:perms env) trees)))
+
+;; range of minhash
+(def hashrange (get-range k trees))
+
+;; vector of minhash slice lengths
+(def hashranges (get-hashranges k trees))
 
 (defn- populate-hastables!
   "adds each slice of the minhash to a differnt hashtable bucket"
@@ -14,7 +24,7 @@
     (map (fn [index min-slice]
            (let [kw (keywordize index)]
              (swap! forest assoc-in [:hashtables kw min-slice] (keywordize key))))
-         (range (:trees env))
+         (range trees)
          minhash)))
 
 (defn- populate-keys!

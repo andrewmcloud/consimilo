@@ -1,6 +1,12 @@
 (ns consimilo.lsh-query
-  (:require [consimilo.lsh-state :refer [trees hashranges k]]
-            [consimilo.lsh-util :refer [slice-minhash tree-keys coll-prefix v>=v v=v]]
+  (:require [consimilo.lsh-state :refer [hashranges
+                                         trees
+                                         k]]
+            [consimilo.lsh-util :refer [slice-minhash
+                                        coll-prefix
+                                        tree-keys
+                                        v>=v
+                                        v=v]]
             [config.core :refer [env]]))
 
 (defn- hashtable-lookup

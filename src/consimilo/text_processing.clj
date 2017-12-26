@@ -3,26 +3,41 @@
             [pantomime.mime :refer [mime-type-of]]
             [pantomime.extract :as extract]
             [clojure.java.io :as io]
-            [clojure.string :refer [lower-case]]
+            [clojure.string :refer [lower-case
+                                    split-lines]]
             [config.core :refer [env]]
             [clojure.tools.logging :as log]))
 
-(def tokenize (make-tokenizer (io/resource "en-token.bin")))
+(def ^:private tokenize (make-tokenizer (io/resource "en-token.bin")))
+(def ^:private stopwords (set (split-lines (slurp (io/resource "stopwords.txt")))))
+
+(defn- remove-stopwords
+  "If stopwords?: returns tokenized-text with stopwords removed, else: returns tokenized-text unaltered"
+  [stopwords? tokenized-text]
+  (if stopwords?
+    (remove stopwords tokenized-text)
+    tokenized-text))
 
 (defn tokenize-text
-  [text]
+  "Tokenizes a string of text. If stopwords?: removes stopwords from token collection"
+  [text & {:keys [stopwords?] :or {stopwords? true}}]
   (->> (lower-case text)
        tokenize
-       set
-       vec))
+       (remove-stopwords stopwords?)))
 
 (defn shingle
-  ([text-vec n]
-   (shingle text-vec n []))
+  "Generates contiguous sequences of tokens of length n, may be a better gauge of similarity when using consimilo
+  to query a text corpus for similarity. Generate tokenized-text via consimilo.text-processing/tokenize-text"
+  ([tokenized-text n]
+   (if (and (> n 1) (<= n (count tokenized-text)))
+     (shingle tokenized-text n [])
+     (do
+       (log/warn "Invalid shingle size. Shingle size must be (1 < n <= tokenized-text) returning tokenized-text")
+       tokenized-text)))
   ([[first & rest] n coll]
    (let [k (dec n)]
      (if (not= k (count (take k rest)))
-       (vec (set (map lower-case coll)))
+       coll
        (recur rest n (conj coll (->> rest
                                      (take k)
                                      (concat [first])

@@ -33,6 +33,7 @@
      (count self)))
 
 (defn zip-jaccard
+  "returns key value pairs {minhash-key, jaccard}"
   [forest query]
   (zipmap (:top-k query)
           (map #(jaccard (:query-hash query) (get-in @forest [:keys %]))

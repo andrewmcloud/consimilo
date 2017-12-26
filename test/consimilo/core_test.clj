@@ -3,14 +3,16 @@
             [consimilo.core :refer :all]
             [clojure.java.io :as io]))
 
-(def minhash1 {:id "1" :coll ["1" "2" "3"]})
-(def minhash2 {:id "2" :coll ["1" "3" "10"]})
-(def minhash3 {:id "3" :coll ["32" "64" "128"]})
+;; TODO: add more extensive testing of core
+
+(def minhash1 {:id "1" :features ["1" "2" "3"]})
+(def minhash2 {:id "2" :features ["1" "3" "10"]})
+(def minhash3 {:id "3" :features ["32" "64" "128"]})
 
 (def forest-from-hash (add-all-to-forest [minhash1 minhash2 minhash3]))
-(def forest-from-strings (add-strings-to-forest [{:id "1" :coll "My name is Andrew and I live in Charleston SC. I am staying home for Christmas this year."}
-                                                 {:id "2" :coll "My name is Christina and I live in West Ashley SC. I am not staying home for Christmas this year."}
-                                                 {:id "3" :coll "My name is David and I live in Summerville, SC. I am going to go to Florida for Christmas this year."}]))
+(def forest-from-strings (add-strings-to-forest [{:id "1" :features "My name is Andrew and I live in Charleston SC. I am staying home for Christmas this year."}
+                                                 {:id "2" :features "My name is Christina and I live in West Ashley SC. I am not staying home for Christmas this year."}
+                                                 {:id "3" :features "My name is David and I live in Summerville, SC. I am going to go to Florida for Christmas this year."}]))
 
 (deftest core-add-all-test
   (testing "core add all returns indexed forest"
@@ -47,9 +49,9 @@
     (is (>= (:1 (jaccard-k forest-from-strings
                            "My name is Bonnie and I live in Charleston, SC. I am staying home for Christmas this year."
                            1))
-            100/128)))
+            3/4)))
   (testing "calculate jaccard on top-k results, file input"
     (is (>= (:1 (jaccard-k forest-from-strings
                            (io/resource "test.txt")
                            1))
-            100/128))))
+            3/4))))

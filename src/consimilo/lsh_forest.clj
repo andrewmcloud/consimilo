@@ -1,6 +1,14 @@
 (ns consimilo.lsh-forest
-  (:require [consimilo.lsh-util :refer [slice-minhash tree-keys build-hashtables build-sorted-hashtables keywordize]]
-            [consimilo.lsh-state :refer [plant-trees! sort-tree hashranges hashrange trees]]
+  (:require [consimilo.lsh-util :refer [build-sorted-hashtables
+                                        build-hashtables
+                                        slice-minhash
+                                        keywordize
+                                        tree-keys]]
+            [consimilo.lsh-state :refer [plant-trees!
+                                         hashranges
+                                         hashrange
+                                         sort-tree
+                                         trees]]
             [consimilo.lsh-query :refer [query]]
             [config.core :refer [env]]))
 

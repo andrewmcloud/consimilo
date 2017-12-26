@@ -1,71 +1,137 @@
 (ns consimilo.core
-  (:require
-    [consimilo.lsh-forest :refer [add-lsh! index! new-forest]]
-    [consimilo.minhash :refer [build-minhash]]
-    [consimilo.minhash-util :refer [zip-jaccard]]
-    [consimilo.lsh-query :refer [query]]
-    [consimilo.text-processing :refer [extract-text shingle tokenize tokenize-text]])
+  (:require [consimilo.lsh-forest :refer [new-forest
+                                          add-lsh!
+                                          index!]]
+            [consimilo.minhash :refer [build-minhash]]
+            [consimilo.minhash-util :refer [zip-jaccard]]
+            [consimilo.lsh-query :refer [query]]
+            [consimilo.text-processing :refer [tokenize-text
+                                               extract-text
+                                               shingle]])
   (:import (clojure.lang IAtom)))
 
+;; TODO: add ability to serialize / deserialize forests
+
 (defn add-all-to-forest
-  "Adds each vector in `coll` to an lsh forest and returns the forest.
-  If you want to add the `coll` to an existing `forest` pass the forest as the first argument.
-  Each item of `coll` should be a map with :id and :coll entries.
-  The :id is the identifier for the vector that will be returned upon query of the forest.
-  The :coll is a ???." ;TODO: describe vector better
-  ([coll]
-   (add-all-to-forest (new-forest) coll))
-  ([forest coll]
-   (dorun (pmap #(add-lsh! forest (:id %) (build-minhash (:coll %))) coll))
+  "Adds each vector in `feature-coll` to an lsh forest and returns the forest.
+  If you want to add the `feature-coll` to an existing `forest` pass the forest as the first argument.
+  Each item of `feature-coll` should be a map with :id and :features entries.
+  The :id is the identifier for the minhash vector that will be returned upon query of the forest.
+  This id can be utilized to lookup the minhash vector in the :keys hashmap of the forest.
+  The :features is a collection of strings which will be utilized to create the minhash vector
+  (e.g. in the case of a document, the :features could either be individual tokens, or shingles).
+
+  Note: items should be loaded into the forest as few times as possible in large chunks. An expensive
+  sort called after items are added to the forest to enable ~log(n) queries."
+  ([feature-coll]
+   (add-all-to-forest (new-forest) feature-coll))
+  ([forest feature-coll]
+   (dorun (pmap #(add-lsh! forest (:id %) (build-minhash (:features %))) feature-coll))
    (index! forest)
    forest))
 
 (defn query-forest
-  "Finds the closts `k` vectors to vector `v` stored in the `forest`."
+  "Finds the closest `k` vectors to vector `v` stored in the `forest`."
   [forest v k]
   (let [minhash (build-minhash v)]
     {:top-k (query forest minhash k) :query-hash minhash}))
 
 (defn add-strings-to-forest
-  [strings & {:keys [forest shingle? n] :or {forest (new-forest) shingle? false n 3}}]
-  (add-all-to-forest forest
-                     (map #(assoc % :coll
-                             (if shingle?
-                               (shingle (tokenize (:coll %)) n)
-                               (tokenize-text (:coll %))))
-                          strings)))
+  "Convenience method for processing documents. Each item of feature-coll should be a map with
+  :id and :features entries. The :id is the identifier for the minhash vector stored in the forest.
+  The :features is a string which will be tokenized and/or shingled into features per the optional
+  parameters. The feature vector will be minhashed and inserted into the lsh-forest.
 
-(defn query-string
-  [forest string k & {:keys [shingle? n] :or {shingle? false n 3}}]
-  (query-forest forest
-                (if shingle?
-                  (shingle (tokenize string) n)
-                  (tokenize-text string))
-                k))
+  Optional Keyword Arguments: :forest - add to an existing forest; default: create new forest
+                              :stopwords? - if true: remove stopwords; default: true
+                              :shingle? - if true: shingle to n token length; default false
+                              :n - shingle token length; default 3
+
+  Note: items should be loaded into the forest as few times as possible in large chunks. An expensive
+  sort called after items are added to the forest to enable ~log(n) queries."
+
+  [feature-coll & {:keys [forest stopwords? shingle? n]
+                   :or {forest (new-forest) stopwords? true shingle? false n 3}}]
+  (add-all-to-forest forest
+                     (map #(assoc % :features
+                             (if shingle?
+                               (shingle (tokenize-text (:features %)) n)
+                               (tokenize-text (:features %))))
+                          feature-coll)))
 
 (defn add-files-to-forest
-  [files & {:keys [forest shingle? n] :or {forest (new-forest) shingle? false n 3}}]
+  "Convenience method for processing files. Files should be a collection of File objects.
+  The :id used for entry into the forest will be generated from the file name. The :features will
+  be generated by extracting the text from each file and tokenizing and/or shingling per the optional
+  parameters. The feature vector is minhashed and inserted into the lsh-forest.
+
+  Optional Keyword Arguments: :forest - add to an existing forest; default: create new forest
+                              :stopwords? - if true: remove stopwords; default: true
+                              :shingle? - if true: shingle to n token length; default false
+                              :n - shingle token length; default 3
+
+  Note: items should be loaded into the forest as few times as possible in large chunks. An expensive
+  sort called after items are added to the forest to enable ~log(n) queries."
+  [files & {:keys [forest stopwords? shingle? n]
+            :or {forest (new-forest) stopwords? true shingle? false n 3}}]
   (add-strings-to-forest (map (fn [f] {:id (.getName f)
-                                       :coll (extract-text f)})
+                                       :features (extract-text f)})
                               files)
                          :shingle? shingle?
                          :n n))
 
+(defn query-string
+  "Convenience method for querying the forest for top-k similar strings. forest is the forest to be
+  queried. string will be converted to a feature vector through tokenization / shingling per the optional
+  parameters. The feature vector is minhashed and used to query the forest. K is the number of results
+  (top-k most similar items).
+
+  Optional Keyword Arguments: :stopwords? - if true: remove stopwords; default: true
+                              :shingle? - if true: shingle to n token length; default false
+                              :n - shingle token length; default 3
+
+  Note: for best results query the forest utilizing the same tokenization / shingling scheme used to create it"
+  [forest string k & {:keys [stopwords? shingle? n]
+                      :or {stopwords? true shingle? false n 3}}]
+  (query-forest forest
+                (if shingle?
+                  (shingle (tokenize-text string) n)
+                  (tokenize-text string))
+                k))
+
 (defn query-file
-  [forest file k & {:keys [shingle? n] :or {shingle? false n 3}}]
+  "Convenience method for querying the forest for top-k similar files. Forest is the forest to be
+  queried. File is converted to a feature vector through text-extraction, tokenizating / shingling
+  per the optional arguments. The feature vector is minhashed and used to query the forest. k is the number
+  of results (top-k most similar items).
+
+  Optional Keyword Arguments: :stopwords? - if true: remove stopwords; default: true
+                              :shingle? - if true: shingle to n token length; default false
+                              :n - shingle token length; default 3
+
+  Note: for best results query the forest utilizing the same tokenization / shingling scheme used to create it"
+  [forest file k & {:keys [stopwords? shingle? n]
+                    :or {stopwords? true shingle? false n 3}}]
   (query-string forest
                 (extract-text file)
                 k))
 
+
 (defmulti jaccard-k
-  (fn [forest input k & {:keys [shingle? n] :or {shingle? false n 3}}] (string? input)))
+  "Query forest for top-k items, return pairs: {item-key, jaccard-score}
+  Dispatches based on input (string or file)."
+  (fn [forest input k & {:keys [stopwords? shingle? n]
+                         :or {stopwords? true shingle? false n 3}}]
+    (string? input)))
 
 (defmethod jaccard-k true
-  [forest string k & {:keys [shingle? n] :or {shingle? false n 3}}]
+  [forest string k & {:keys [stopwords? shingle? n]
+                      :or {stopwords? true shingle? false n 3}}]
   (let [return (query-string forest string k :shingle? shingle? :n n)]
     (zip-jaccard forest return)))
 
 (defmethod jaccard-k false
-  [forest file k & {:keys [shingle? n] :or {shingle? false n 3}}]
+  [forest file k & {:keys [stopwords? shingle? n]
+                    :or {stopwords? true shingle? false n 3}}]
   (let [return (query-file forest file k :shingle? shingle? :n n)]
     (zip-jaccard forest return)))
