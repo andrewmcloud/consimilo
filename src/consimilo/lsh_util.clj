@@ -17,7 +17,7 @@
   [k trees]
   (* k trees))
 
-(defn keyword-int
+(defn keywordize
   "Converts integer to keyword"
   [i]
   (keyword (str i)))
@@ -25,7 +25,7 @@
 (defn tree-keys
   "Keywords for each integer between 0 and `trees`."
   [trees]
-  (mapv keyword-int (range trees)))
+  (mapv keywordize (range trees)))
 
 (defn v=v
   "predicate: vector1 = vector2"
@@ -40,12 +40,12 @@
 (defn build-hashtables
   "Creates map from keywords for 0 to `trees` to {}."
   [trees]
-  (zipmap (map keyword-int (range trees)) (repeat {})))
+  (zipmap (map keywordize (range trees)) (repeat {})))
 
 (defn build-sorted-hashtables
   "Creates map from keywords for 0 to `trees` to []."
   [trees]
-  (zipmap (map keyword-int (range trees)) (repeat [])))
+  (zipmap (map keywordize (range trees)) (repeat [])))
 
 (defn coll-prefix
   "returns vector of first k items in coll"

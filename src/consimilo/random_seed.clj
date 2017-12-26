@@ -1,5 +1,6 @@
 (ns consimilo.random-seed
-  (:refer-clojure :exclude [rand rand-int])
+  (:refer-clojure :exclude [rand-int
+                            rand])
   (:import (java.util Random)))
 
 (defonce r (Random.))

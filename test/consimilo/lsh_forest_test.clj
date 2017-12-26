@@ -1,9 +1,7 @@
 (ns consimilo.lsh-forest-test
   (:require [clojure.test :refer :all]
             [consimilo.lsh-forest :refer :all]
-            [consimilo.lsh-util :refer [v=v keyword-int]]
-            [consimilo.minhash :refer [build-minhash]]
-            [consimilo.lsh-state :refer [sort-tree]]))
+            [consimilo.minhash :refer [build-minhash]]))
 
 (def minhash1 (build-minhash ["1" "2" "3"]))
 (def minhash2 (build-minhash ["1" "2" "10"]))

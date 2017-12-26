@@ -1,6 +1,14 @@
 (ns consimilo.lsh-forest
-  (:require [consimilo.lsh-util :refer [slice-minhash tree-keys build-hashtables build-sorted-hashtables]]
-            [consimilo.lsh-state :refer [plant-trees! sort-tree hashranges hashrange trees]]
+  (:require [consimilo.lsh-util :refer [build-sorted-hashtables
+                                        build-hashtables
+                                        slice-minhash
+                                        keywordize
+                                        tree-keys]]
+            [consimilo.lsh-state :refer [plant-trees!
+                                         hashranges
+                                         hashrange
+                                         sort-tree
+                                         trees]]
             [consimilo.lsh-query :refer [query]]
             [config.core :refer [env]]))
 
@@ -15,7 +23,7 @@
   "add minhash to lsh-forest. key must be a string, will be converted to keyword"
   [forest key minhash]
   (cond
-    (get-in @forest [:keys (keyword key)]) (print "key already added to hash")
+    (get-in @forest [:keys (keywordize key)]) (print "key already added to hash")
     (< (count minhash) hashrange) (print "minhash is not correct permutation size")
     :else (plant-trees! forest key (slice-minhash minhash hashranges))))
 

@@ -50,11 +50,6 @@
       (is (= true (instance? BigInteger (first result))))
       (is (= true (instance? BigInteger (last result)))))))
 
-(deftest intersection-ct-test
-  (let [private-intersection-ct #'consimilo.minhash-util/intersection-ct]
-    (testing "intersection-ct functionality"
-      (is (= 2 (private-intersection-ct big-coll-1 big-coll-3))))))
-
 (deftest jaccard-test
   (testing "jaccard functionality"
     (is (= 0 (jaccard big-coll-1 big-coll-2))
