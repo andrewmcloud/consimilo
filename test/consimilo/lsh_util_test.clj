@@ -15,7 +15,7 @@
 
 (deftest keyword-int-test
   (testing "returns int turned into keyword"
-    (is (= :0 (keyword-int 0)))))
+    (is (= :0 (keywordize 0)))))
 
 (deftest build-hashtables-test
   (testing "initializes empty hashtables structure"

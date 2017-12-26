@@ -1,5 +1,6 @@
 (ns consimilo.minhash-test
   (:require [clojure.test :refer :all]
+            [clojure.set :refer [intersection]]
             [consimilo.minhash :refer :all]))
 
 (defn build-biginteger-coll
@@ -22,7 +23,6 @@
 
 (deftest build-permutations-test
   (let [private-build-permutations #'consimilo.minhash/build-permutations
-        private-intersection-ct #'consimilo.minhash-util/intersection-ct
         p (private-build-permutations)]
     (testing "keys :a and :b are not nil in permutations map"
       (is (not (nil? (:a p))))
@@ -31,7 +31,7 @@
       (is (= perms (count (:a p))))
       (is (= perms (count (:b p)))))
     (testing "keys :a and :b are unique collections"
-      (is (not= perms (private-intersection-ct (:a p) (:b p)))))))
+      (is (not= perms (count (intersection (set (:a p)) (set (:b p)))))))))
 
 (deftest build-minhash-test
   (let [minhash (build-minhash ["my" "name" "is" "andrew"])]
