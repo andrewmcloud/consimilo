@@ -13,6 +13,8 @@
 (def forest-from-strings (add-strings-to-forest [{:id "1" :features "My name is Andrew and I live in Charleston SC. I am staying home for Christmas this year."}
                                                  {:id "2" :features "My name is Christina and I live in West Ashley SC. I am not staying home for Christmas this year."}
                                                  {:id "3" :features "My name is David and I live in Summerville, SC. I am going to go to Florida for Christmas this year."}]))
+(def forest-from-one-file (add-files-to-forest [(io/as-file (io/resource "test.txt"))]))
+(def forest-from-files (add-files-to-forest [(io/as-file (io/resource "test1.txt"))] :forest forest-from-one-file))
 
 (deftest core-add-all-test
   (testing "core add all returns indexed forest"
@@ -29,8 +31,13 @@
   (testing "query-string"
     (is (= '(:1 :2)
            (:top-k (query-string forest-from-strings
-                                 "My name is Bonnie and I live in Charleston, SC. I am staying home for Christmas this year."
+                                 "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year."
                                  2)))))
+  (testing "query-string - forest built form files incrementally"
+    (is (= '(:test1.txt)
+           (:top-k (query-string forest-from-files
+                                 "My name is Andrew and I am the author of this codebase. I live in Charleston, SC."
+                                 1)))))
 
   (testing "query-file"
     (is (= '(:1 :2)
@@ -47,11 +54,11 @@
 (deftest core-jaccard-k
   (testing "calculate jaccard on top-k results, string input"
     (is (>= (:1 (jaccard-k forest-from-strings
-                           "My name is Bonnie and I live in Charleston, SC. I am staying home for Christmas this year."
+                           "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year."
                            1))
-            3/4)))
+            3/5)))
   (testing "calculate jaccard on top-k results, file input"
     (is (>= (:1 (jaccard-k forest-from-strings
                            (io/resource "test.txt")
                            1))
-            3/4))))
+            3/5))))

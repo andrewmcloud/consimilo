@@ -77,6 +77,7 @@
   (add-strings-to-forest (map (fn [f] {:id (.getName f)
                                        :features (extract-text f)})
                               files)
+                         :forest forest
                          :shingle? shingle?
                          :n n))
 
