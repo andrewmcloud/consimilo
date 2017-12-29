@@ -61,15 +61,7 @@ Add a collection of strings to a *new* forest, remove stopwords, single token fe
                   {:id id2 :features "my sample string 2"}]))
 ```
 
-Add a collection of strings to an *existing* forest, remove stopwords, single token features.
-```clojure
-(def my-forest (add-strings-to-forest
-                 [{:id id1 :features "my sample string 1"}
-                  {:id id2 :features "my sample string 2"}]
-                 :forest forest))
-```
-
-Add a collection of strings to an *existing* forest, *include* stopwords, 4 shingle token features.
+Add a collection of strings to an *existing* forest, *include* stopwords, *4 shingle* token features.
 ```clojure
 (def my-updated-forest (add-strings-to-forest
                          [{:id id1 :features "my sample string 1"}
