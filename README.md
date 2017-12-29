@@ -10,7 +10,7 @@ an unwieldy complexity *(n choose 2)* at relatively small corpus sizes. LSH redu
 in such a way that collisions occur as a result of similarity. Once the items are hashed and indexed the lsh-forest 
 supports a *top-k* most similar items query of ~*O(log n)*. There is an accuracy tradeoff that comes with the enormous 
 increase in query speed. More information can be found in chapter 3 of 
-[Mining Massive Datasets](http://infolab.stanford.edu/~ullman/mmds/ch3.pdf)
+[Mining Massive Datasets](http://infolab.stanford.edu/~ullman/mmds/ch3.pdf).
 
 
 ## Getting Started
@@ -36,7 +36,7 @@ containing the individual features. `[{:id id1 :features [feature1 feature2 ... 
 Once your candidates vector is in the correct form, you can add the items to the forest:
 
 ```clojure
-(def my-forest (add-all-to-forest vectors))
+(def my-forest (add-all-to-forest candidates-vector))
 ```
 
 You can continue to add to this forest by passing it as the first argument to `add-all-to-forest`.
@@ -45,7 +45,7 @@ better to add all items to the forest at once or in the case of a live system, a
 offline and replace the production forest.
 
 ```clojure
-(def my-updated-forest (add-all-to-forest forest new-vectors))
+(def my-updated-forest (add-all-to-forest forest new-candidates-vector))
 ```
 
 #### Adding strings and files to forest (helper functions)
@@ -105,14 +105,14 @@ a vector `v` by running:
 (println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
 ```  
 
-#### Helper functions - querying forest with strings and files
+#### Querying forest with strings and files (helper functions)
 
 consimilo provides helper functions for querying the forest with strings and files. Queries against strings and files 
 should be made using the same tokenization / shingling scheme used to input items in the forest. The two helper 
 functions `query-string` and `query-file` have optional parameters `:stopwords?` `:shingle?` `:n`. The optional 
-parameters are defaulted to the same values as `add-stingers-to-forest` and `add-files-to-forest`.
+parameters are defaulted to the same values as `add-strings-to-forest` and `add-files-to-forest`.
 
-##### Query forest with string
+##### Querying forest with string
 
 ```clojure
 (def results (query-string my-forest "my query string"))
@@ -120,7 +120,7 @@ parameters are defaulted to the same values as `add-stingers-to-forest` and `add
 (println (:top-k results)) ;;returns a list of keys ordered by similarity
 (println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
 ```  
-##### Query forest with file
+##### Querying forest with file
 
 ```clojure
 (def restuls (query-file my-forest Fileobj))
@@ -129,12 +129,13 @@ parameters are defaulted to the same values as `add-stingers-to-forest` and `add
 (println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
   ```
   
-##### Query forest and calculate similarity
+##### Querying forest and calculate similarity
 
-consimilo provides helper functions for calcuating similarity between the query and top-k results. jaccard, cosine, 
-and hamming functions are available. `similar-k` accepts optional parameters to specify which similarity function 
-should be used: `:jaccard?` `:hamming?` `:cosine?`. `similar-k` returns a hashmap, keys are the *top-k* ids and vals are 
-the similarity scores.
+consimilo provides helper functions for calcuating distance / similarity between the query and *top-k* results. The 
+function `similar-k` accepts optional parameters to specify which distance / similarity function should be used. 
+For calculating Jaccard similarity, use: `:jaccard? true`, for calculating Hamming distance, use: `:hamming? :true`, 
+and for calculating cosine distance, use: `:cosine?`. `similar-k` returns a hashmap, keys are the *top-k* ids and vals 
+are the similarity scores.
 
 ```clojure
 (def sim (similar-k 
