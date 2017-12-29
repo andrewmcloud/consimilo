@@ -1,7 +1,7 @@
 (ns consimilo.minhash
   (:require [consimilo.random-seed :refer [set-random-seed!
                                            rand-vec]]
-            [consimilo.sha1 :refer [get-hash-biginteger]]
+            [consimilo.sha1 :refer [get-hash-bigint]]
             [config.core :refer [env]]
             [consimilo.minhash-util :refer [elementwise-add
                                             elementwise-min
@@ -12,10 +12,10 @@
             [clojure.core :exclude [rand-int]]))
 
 ;; large prime
-(def mersenne (biginteger (dec (bit-shift-left 1 61))))
+(def mersenne (bigint (dec (bit-shift-left 1 61))))
 
 ;; max-hash size, used to truncate minhash values
-(def max-hash (biginteger (dec (bit-shift-left 1 32))))
+(def max-hash (bigint (dec (bit-shift-left 1 32))))
 
 ;; random number seed
 (def seed (:seed env))
@@ -46,13 +46,13 @@
   of documents with varying feature sizes. One minhash should be created for
   each document"
   [hashvalues feature]
-  (let [hv (get-hash-biginteger feature)
+  (let [hv (get-hash-bigint feature)
         a (:a permutations)
         b (:b permutations)]
     (-> (scalar-mul a hv)
         (elementwise-add b)
         (scalar-mod mersenne)
-        (scalar-and max-hash)
+        ;(scalar-and max-hash))))
         (elementwise-min hashvalues))))
 
 (defn build-minhash

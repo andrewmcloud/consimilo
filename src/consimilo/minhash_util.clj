@@ -5,27 +5,27 @@
 (defn scalar-and
   "performs a scalar bitwise on each element of vec and k"
   [v k]
-  (mapv (fn [e] (.and e (biginteger k))) v))
+  (mapv (fn [e] (and e (bigint k))) v))
 
 (defn scalar-mod
   "performs a scalar modulus on each element of vec and k"
   [v k]
-  (mapv #(.mod % (biginteger k)) v))
+  (mapv #(mod % (bigint k)) v))
 
 (defn scalar-mul
   "performs a scalar multiply on each element of vec and k"
   [v k]
-  (mapv #(.multiply % (biginteger k)) v))
+  (mapv #(* % (bigint k)) v))
 
 (defn elementwise-add
   "performs elementwise addition betwen vectors v1 and v1"
   [v1 v2]
-  (mapv #(.add %1 %2) v1 v2))
+  (mapv #(+ %1 %2) v1 v2))
 
 (defn elementwise-min
   "performs elementwise minimum between vectors v1 and v2"
   [v1 v2]
-  (mapv #(.min %1 %2) v1 v2))
+  (mapv #(min %1 %2) v1 v2))
 
 (defn jaccard
   "performs jaccard on vectors self and other"

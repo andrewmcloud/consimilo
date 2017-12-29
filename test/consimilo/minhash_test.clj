@@ -1,23 +1,24 @@
 (ns consimilo.minhash-test
   (:require [clojure.test :refer :all]
             [clojure.set :refer [intersection]]
-            [consimilo.minhash :refer :all]))
+            [consimilo.minhash :refer :all])
+  (:import (clojure.lang BigInt)))
 
-(defn build-biginteger-coll
+(defn build-bigint-coll
   [coll]
-  (map biginteger coll))
+  (map bigint coll))
 
-(def minhash-1 (build-biginteger-coll '(1 2 3 4 5 6 7 8 9)))
-(def minhash-2 (build-biginteger-coll '(9 8 7 6 5 4 3 2 1)))
-(def minhash-3 (build-biginteger-coll '(1 2 3 4 5 4 3 2 1)))
+(def minhash-1 (build-bigint-coll '(1 2 3 4 5 6 7 8 9)))
+(def minhash-2 (build-bigint-coll '(9 8 7 6 5 4 3 2 1)))
+(def minhash-3 (build-bigint-coll '(1 2 3 4 5 4 3 2 1)))
 
 (deftest init-hashvalues-test
   (let [private-init-hashvals #'consimilo.minhash/init-hashvalues
         hashvals (private-init-hashvals)]
     (testing "init-hahsvalues returns a collection of mersenne primes"
       (is (every? #(= mersenne %) hashvals)))
-    (testing "init-hashvalues returns a collection of type BigInteger"
-      (is (every? #(instance? BigInteger %) hashvals)))
+    (testing "init-hashvalues returns a collection of type bigint"
+      (is (every? #(instance? BigInt %) hashvals)))
     (testing "init-hashvalues returns a collection of length perms"
       (is (= perms (count hashvals))))))
 
@@ -38,8 +39,8 @@
     (testing "resulting minhash is length perms"
       (is (= perms (count minhash))))
     (testing "elements in minhash collection are of type minhash"
-      (is (instance? BigInteger (first minhash)))
-      (is (instance? BigInteger (last minhash))))))
+      (is (instance? BigInt (first minhash)))
+      (is (instance? BigInt (last minhash))))))
 
 (deftest merge-minhash-test
   (testing "testing merging two minhash vectors together."
