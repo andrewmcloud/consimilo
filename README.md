@@ -58,7 +58,7 @@ Add a collection of strings to a *new* forest, remove stopwords, single token fe
 ```clojure
 (def my-forest (add-strings-to-forest
                  [{:id id1 :features "my sample string 1"}
-                 {:id id2 :features "my sample string 2"}]))
+                  {:id id2 :features "my sample string 2"}]))
 ```
 
 Add a collection of strings to an *existing* forest, remove stopwords, single token features.
@@ -110,8 +110,11 @@ Once you have your `forest` built you can query for the top `k` similar entries 
 a vector `v` by running:
 
 ```clojure
-(query-forest my-forest v k)
-```
+(def results (query-forest my-forest v k))
+
+(println (:top-k results)) ;;returns a list of keys ordered by similarity
+(println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
+```  
 
 #### Helper functions - querying forest with strings and files
 
@@ -123,9 +126,7 @@ parameters are defaulted to the same values as ```(add-stingers-to-forest)``` an
 ##### Query forest with string
 
 ```clojure
-(def results (query-string 
-               my-forest
-               "my query string"))
+(def results (query-string my-forest "my query string"))
 
 (println (:top-k results)) ;;returns a list of keys ordered by similarity
 (println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
@@ -133,10 +134,7 @@ parameters are defaulted to the same values as ```(add-stingers-to-forest)``` an
 ##### Query forest with file
 
 ```clojure
-(def restuls (query-file
-               my-forest
-               Fileobj))
-
+(def restuls (query-file my-forest Fileobj))
 
 (println (:top-k results)) ;;returns a list of keys ordered by similarity
 (println (:query-hash results) ;;returns the minhash of the query. Utilized to calculate similarity.
@@ -150,7 +148,7 @@ should be used: :jaccard? :hamming? :cosine?. ```(similar-k)``` returns a hashma
 the similarities.
 
 ```clojure
-(def sim (similar-k
+(def sim (similar-k 
            forest
            query
            k
