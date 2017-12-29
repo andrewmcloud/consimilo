@@ -20,7 +20,9 @@
 (defn keywordize
   "Converts integer to keyword"
   [i]
-  (keyword (str i)))
+  (if (keyword? i)
+    i
+    (keyword (str i))))
 
 (defn tree-keys
   "Keywords for each integer between 0 and `trees`."

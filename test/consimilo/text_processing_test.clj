@@ -45,5 +45,5 @@
 
 (deftest extract-text-test
   (testing "extracting text from file"
-    (is (= "My name is Bonnie and I live in Charleston, SC. I am staying home for Christmas this year.\n"
+    (is (= "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year.\n"
            (extract-text (io/resource "test.txt"))))))

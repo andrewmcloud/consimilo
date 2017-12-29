@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module cursive.leiningen.project.LeiningenProjectsManager.displayName="consimilo:0.1.0-SNAPSHOT" cursive.leiningen.project.LeiningenProjectsManager.isLeinModule="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager">
-    <output url="file://$MODULE_DIR$/target/default/classes" />
-    <output-test url="file://$MODULE_DIR$/target/default/classes" />
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/base+system+user+dev/classes" />
+    <output-test url="file://$MODULE_DIR$/target/base+system+user+dev/classes" />
     <exclude-output />
-    <option name="createStubs" value="true" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/dev-resources" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
@@ -15,9 +14,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Leiningen: byte-streams:0.2.0" level="project" />
     <orderEntry type="library" name="Leiningen: c3p0:0.9.1.1" level="project" />
-    <orderEntry type="library" name="Leiningen: cider/cider-nrepl:0.14.0" level="project" />
     <orderEntry type="library" name="Leiningen: clj-antlr:0.2.3" level="project" />
+    <orderEntry type="library" name="Leiningen: clj-tuple:0.2.2" level="project" />
     <orderEntry type="library" name="Leiningen: clojure-complete:0.2.4" level="project" />
     <orderEntry type="library" name="Leiningen: clojure-opennlp:0.4.0" level="project" />
     <orderEntry type="library" name="Leiningen: com.adobe.xmp/xmpcore:5.1.2" level="project" />
@@ -58,6 +58,7 @@
     <orderEntry type="library" name="Leiningen: javax.measure/jsr-275:0.9.3" level="project" />
     <orderEntry type="library" name="Leiningen: javax.ws.rs/javax.ws.rs-api:2.0.1" level="project" />
     <orderEntry type="library" name="Leiningen: joda-time:2.2" level="project" />
+    <orderEntry type="library" name="Leiningen: manifold:0.1.0" level="project" />
     <orderEntry type="library" name="Leiningen: mvxcvi/arrangement:1.1.0" level="project" />
     <orderEntry type="library" name="Leiningen: mvxcvi/puget:1.0.1" level="project" />
     <orderEntry type="library" name="Leiningen: mvxcvi/whidbey:1.3.0" level="project" />
@@ -70,6 +71,7 @@
     <orderEntry type="library" name="Leiningen: org.apache.commons/commons-compress:1.12" level="project" />
     <orderEntry type="library" name="Leiningen: org.apache.commons/commons-csv:1.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.apache.commons/commons-exec:1.3" level="project" />
+    <orderEntry type="library" name="Leiningen: org.apache.commons/commons-math3:3.6.1" level="project" />
     <orderEntry type="library" name="Leiningen: org.apache.commons/commons-vfs2:2.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.apache.cxf/cxf-core:3.0.3" level="project" />
     <orderEntry type="library" name="Leiningen: org.apache.cxf/cxf-rt-frontend-jaxrs:3.0.3" level="project" />
@@ -108,10 +110,17 @@
     <orderEntry type="library" name="Leiningen: org.ccil.cowan.tagsoup/tagsoup:1.2.1" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojars.brenton/google-diff-match-patch:0.1" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/clojure:1.8.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/core.async:0.3.442" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/core.cache:0.6.5" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/core.memoize:0.5.9" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/core.rrb-vector:0.0.11" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/data.codec:0.1.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/data.priority-map:0.0.7" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/tools.analyzer.jvm:0.7.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/tools.analyzer:0.6.9" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/tools.logging:0.3.1" level="project" />
     <orderEntry type="library" name="Leiningen: org.clojure/tools.nrepl:0.2.12" level="project" />
+    <orderEntry type="library" name="Leiningen: org.clojure/tools.reader:1.0.0-beta4" level="project" />
     <orderEntry type="library" name="Leiningen: org.codehaus.plexus/plexus-utils:1.5.6" level="project" />
     <orderEntry type="library" name="Leiningen: org.codehaus.woodstox/stax2-api:3.1.4" level="project" />
     <orderEntry type="library" name="Leiningen: org.codehaus.woodstox/woodstox-core-asl:4.4.1" level="project" />
@@ -119,21 +128,36 @@
     <orderEntry type="library" name="Leiningen: org.gagravarr/vorbis-java-core:0.8" level="project" />
     <orderEntry type="library" name="Leiningen: org.gagravarr/vorbis-java-tika:0.8" level="project" />
     <orderEntry type="library" name="Leiningen: org.itadaki/bzip2:0.9.1" level="project" />
+    <orderEntry type="library" name="Leiningen: org.jcuda/jcublas-natives:0.8.0:linux-x86_64" level="project" />
+    <orderEntry type="library" name="Leiningen: org.jcuda/jcublas:0.8.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.jcuda/jcuda-natives:0.8.0:linux-x86_64" level="project" />
+    <orderEntry type="library" name="Leiningen: org.jcuda/jcuda:0.8.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.jdom/jdom2:2.0.4" level="project" />
+    <orderEntry type="library" name="Leiningen: org.jocl/jocl-blast:1.2.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.jocl/jocl:2.0.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.json/json:20140107" level="project" />
     <orderEntry type="library" name="Leiningen: org.jsoup/jsoup:1.7.2" level="project" />
     <orderEntry type="library" name="Leiningen: org.opengis/geoapi:3.0.0" level="project" />
+    <orderEntry type="library" name="Leiningen: org.ow2.asm/asm-all:4.2" level="project" />
     <orderEntry type="library" name="Leiningen: org.ow2.asm/asm:5.0.4" level="project" />
     <orderEntry type="library" name="Leiningen: org.quartz-scheduler/quartz:2.2.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.slf4j/slf4j-api:1.7.7" level="project" />
     <orderEntry type="library" name="Leiningen: org.tallison/jmatio:1.2" level="project" />
-    <orderEntry type="library" name="Leiningen: org.tcrawley/dynapath:0.2.4" level="project" />
     <orderEntry type="library" name="Leiningen: org.tukaani/xz:1.5" level="project" />
-    <orderEntry type="library" name="Leiningen: pjstadig/humane-test-output:0.8.0" level="project" />
+    <orderEntry type="library" name="Leiningen: potemkin:0.4.2" level="project" />
+    <orderEntry type="library" name="Leiningen: primitive-math:0.1.4" level="project" />
     <orderEntry type="library" name="Leiningen: regexp:1.3" level="project" />
+    <orderEntry type="library" name="Leiningen: riddley:0.1.11" level="project" />
     <orderEntry type="library" name="Leiningen: robert/hooke:1.3.0" level="project" />
+    <orderEntry type="library" name="Leiningen: uncomplicate/clojurecl:0.7.2" level="project" />
+    <orderEntry type="library" name="Leiningen: uncomplicate/clojurecuda:0.2.0" level="project" />
+    <orderEntry type="library" name="Leiningen: uncomplicate/commons:0.3.1" level="project" />
+    <orderEntry type="library" name="Leiningen: uncomplicate/fluokitten:0.6.0" level="project" />
+    <orderEntry type="library" name="Leiningen: uncomplicate/neanderthal-native:0.17.0" level="project" />
+    <orderEntry type="library" name="Leiningen: uncomplicate/neanderthal:0.17.2" level="project" />
     <orderEntry type="library" name="Leiningen: venantius/glow:0.1.4" level="project" />
     <orderEntry type="library" name="Leiningen: venantius/ultra:0.5.1" level="project" />
+    <orderEntry type="library" name="Leiningen: vertigo:0.1.4" level="project" />
     <orderEntry type="library" name="Leiningen: yogthos/config:0.8" level="project" />
   </component>
 </module>

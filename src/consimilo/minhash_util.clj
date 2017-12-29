@@ -1,5 +1,6 @@
 (ns consimilo.minhash-util
-  (:require [clojure.set :refer [intersection]]))
+  (:require [clojure.set :refer [intersection
+                                 union]]))
 
 (defn scalar-and
   "performs a scalar bitwise on each element of vec and k"
@@ -30,7 +31,7 @@
   "performs jaccard on vectors self and other"
   [self other]
   (/ (count (intersection (set self) (set other)))
-     (count self)))
+     (count (union (set self) (set other)))))
 
 (defn zip-jaccard
   "returns key value pairs {minhash-key, jaccard}"
