@@ -22,92 +22,142 @@ Import it with something like:
   (:require [consimilo.core :as consimilo]))
 ```
 
-#### Building the forest
+### Building a forest
 
-First you need to load all the candidate vectors into an lsh forest. These vectors can represent any arbitrary information 
-(e.g. tokens in a document, shingled tokens, metadata about users, content interactions, context surrounding interactions).
+First you need to load the candidates vector into an lsh forest. These vector can represent any arbitrary information 
+(e.g. tokens in a document, shingled tokens, metadata about users, content interactions, context surrounding 
+interactions). The candidate vector must be a collection of maps, each representing an item. The map will have an :id 
+key which is used to reference the minhash vector in the forest and a :features key which is a vector containing the 
+individual features (e.g ```[{:id id1 :features [feature1 feature2 ... featuren]} ... ]```).
 
-consimilo provides helper methods for constructing feature vectors from strings and files; by default, a new forest is created,
-stopwords are removed, the features consist of individual tokens. You may add to an existing forest, include stopwords, or 
-shingle the text into n-length token features via optional parameters:
+Once your candidates vector is in the correct form, you can add the items to the forest:
 
-####Strings
+#### Adding feature vectors to forest
+```clojure
+(def my-forest (add-all-to-forest vectors))
+```
+
+You can continue to add to this forest by passing it as the first argument to ```add-all-to-forest```.
+(Note: upon every call to add-all-to-forest an expensive sort function is called to enable O(log n) queries. It is 
+better to add all items to the forest at once, or add batches offline and replace the production forest):
+
+```clojure
+(def my-updated-forest (add-all-to-forest forest new-vectors))
+```
+
+#### Helper functions - adding strings and files to forest
+
+consimilo provides helper functions for constructing feature vectors from strings and files. By default, a new forest is 
+created, stopwords are removed, and the features consist of individual tokens. You may add to an existing forest, 
+include stopwords, or shingle the text into n-length token features via optional parameters (:forest :stopwords 
+:shingle? :n) The optional parameters are defaulted to :forest (new-forest) :stopwords? true :shingle? false :n 3.
+
+##### Adding documents/strings to forest
 
 Add a collection of strings to a *new* forest, remove stopwords, single token features.
 ```clojure
-(add-strings-to-forest
-  [{:id id1 :features "my sample string 1"}
-   {:id id2 :features "my sample string 2"}
-   {:id id3 :features "my sample string 3"}
-   {:id id4 :features "my sample string 4"}])
+(def my-forest (add-strings-to-forest
+                 [{:id id1 :features "my sample string 1"}
+                 {:id id2 :features "my sample string 2"}]))
 ```
 
 Add a collection of strings to an *existing* forest, remove stopwords, single token features.
 ```clojure
-(add-strings-to-forest
-  [{:id id1 :features "my sample string 1"}
-   {:id id2 :features "my sample string 2"}
-   {:id id3 :features "my sample string 3"}
-   {:id id4 :features "my sample string 4"}]
-   :forest forest)
+(def my-forest (add-strings-to-forest
+                 [{:id id1 :features "my sample string 1"}
+                  {:id id2 :features "my sample string 2"}]
+                 :forest forest))
 ```
 
-Add a collection of strings to an *existing* forest, *include* stopwords, 3 shingle token features.
+Add a collection of strings to an *existing* forest, *include* stopwords, 4 shingle token features.
 ```clojure
-(add-strings-to-forest
-  [{:id id1 :features "my sample string 1"}
-   {:id id2 :features "my sample string 2"}
-   {:id id3 :features "my sample string 3"}
-   {:id id4 :features "my sample string 4"}]
-   :forest forest
-   :stopwords false
-   :shingle? true)
+(def my-updated-forest (add-strings-to-forest
+                         [{:id id1 :features "my sample string 1"}
+                          {:id id2 :features "my sample string 2"}]
+                         :forest forest
+                         :stopwords false
+                         :shingle? true
+                         :n 4))
 ```
 
 Add a collection of strings to an *existing* forest, *include* stopwords, 4 shingle token features. Shingle length must 
 be greather than one and less than feature length, else single token features will be utilized.
 ```clojure
-(add-strings-to-forest
-  [{:id id1 :features "my sample string 1"}
-   {:id id2 :features "my sample string 2"}
-   {:id id3 :features "my sample string 3"}
-   {:id id4 :features "my sample string 4"}]
-   :forest forest
-   :stopwords false
-   :shingle? true
-   :n 5)
+(def my-updated-forest (add-strings-to-forest
+                         [{:id id1 :features "my sample string 1"}
+                          {:id id2 :features "my sample string 2"}]
+                         :forest forest
+                         :stopwords false
+                         :shingle? true
+                         :n 4))
 ``` 
 
-####Files
+##### Adding files to forest
 Add a collection of files to a *new* forest, remove stopwords, 4 shingle token features. :id is auto-generated from the 
 file name and :features are generated from the extracted text. The same optional parameters available for 
-```(add-strings-to-forest)``` are available for ```(add-files-to-forest)```
+```(add-strings-to-forest)``` are also available for ```(add-files-to-forest)```
 
 ```clojure
-(add-files-to-forest
-  [Fileobj1 Fileobj2 Fileobj3 Fileobjn]
-  :shingle? true
-  :n 4)
+(def my-forest (add-files-to-forest
+                 [Fileobj1 Fileobj2 Fileobj3 Fileobjn]
+                 :shingle? true
+                 :n 4))
 ```
 
-Once you have a collection of `vectors` that look like that you can call:
-
-```clojure
-(def forest (add-all-to-forest vectors))
-```
-
-You can continue to add to this forest by passing it as the first argument to
-`add-all-to-forest` like:
-
-```clojure
-(def updated-forest (add-all-to-forest forest new-vectors))
-```
-
-#### Querying the Forest
+### Querying the Forest
 
 Once you have your `forest` built you can query for the top `k` similar entries to
 a vector `v` by running:
 
 ```clojure
-(query-forest forest v k)
+(query-forest my-forest v k)
 ```
+
+#### Helper functions - querying forest with strings and files
+
+consimilo provides helper functions for querying the forest with strings and files. Queries against strings and files 
+should be made using the same tokenization / shingling scheme used to input items in the forest. The two helper 
+functions ```(query-stinrg)``` and ```(query-file)``` have optional parameters :stopwords? :shingle? :n. The optional 
+parameters are defaulted to the same values as ```(add-stingers-to-forest)``` and ```(add-files-to-forest)```.
+
+##### Query forest with string
+
+```clojure
+(def results (query-string 
+               my-forest
+               "my query string"))
+
+(println (:top-k results)) ;;returns a list of keys ordered by similarity
+(println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
+```  
+##### Query forest with file
+
+```clojure
+(def restuls (query-file
+               my-forest
+               Fileobj))
+
+
+(println (:top-k results)) ;;returns a list of keys ordered by similarity
+(println (:query-hash results) ;;returns the minhash of the query. Utilized to calculate similarity.
+  ```
+  
+##### Query forest and calculate similarity
+
+consimilo provides helper functions for calcuating similarity between the query and top-k results. jaccard, cosine, 
+and hamming functions are available. ```(similar-k)``` accepts optional parameters to specify which similarity function 
+should be used: :jaccard? :hamming? :cosine?. ```(similar-k)``` returns a hashmap, keys are the top-k ids and vals are 
+the similarities.
+
+```clojure
+(def sim (similar-k
+           forest
+           query
+           k
+           :cosine? true))
+
+(println sim) ;;{id1 (cosine-distance query id1) ... idk (cosine-distance query idk}
+```
+ 
+
+
