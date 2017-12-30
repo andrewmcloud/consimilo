@@ -88,11 +88,11 @@ the extracted text. The same optional parameters available for `add-strings-to-f
 
 ### Querying the Forest
 
-Once you have your `my-forest` built, you can query for the `top-k` similar entries to
+Once you have your `my-forest` built, you can query for the `k` similar entries to
 a vector `v` by running:
 
 ```clojure
-(def results (query-forest my-forest v top-k))
+(def results (query-forest my-forest k v))
 
 (println (:top-k results)) ;;returns a list of keys ordered by similarity
 (println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
@@ -108,7 +108,7 @@ removing stopwords.
 ##### Querying forest with string
 
 ```clojure
-(def results (query-string my-forest "my query string"))
+(def results (query-string my-forest k "my query string"))
 
 (println (:top-k results)) ;;returns a list of keys ordered by similarity
 (println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
@@ -116,7 +116,7 @@ removing stopwords.
 ##### Querying forest with file
 
 ```clojure
-(def restuls (query-file my-forest Fileobj))
+(def restuls (query-file k my-forest Fileobj))
 
 (println (:top-k results)) ;;returns a list of keys ordered by similarity
 (println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
@@ -133,9 +133,9 @@ using the same tokenizaiton scheme used to input the items in the forest (stopwo
 
 ```clojure
 (def sim (similar-k 
-           forest
-           query
+           my-forest
            k
+           query
            :cosine? true))
 
 (println sim) ;;{id1 (cosine-distance query id1) ... idk (cosine-distance query idk}

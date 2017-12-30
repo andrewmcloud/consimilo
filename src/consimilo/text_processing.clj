@@ -25,6 +25,7 @@
        tokenize
        (remove-stopwords stopwords?)))
 
+;;Not currently used
 (defn shingle
   "Generates contiguous sequences of tokens of length n, may be a better gauge of similarity when using consimilo
   to query a text corpus for similarity. Generate tokenized-text via consimilo.text-processing/tokenize-text"

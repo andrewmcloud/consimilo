@@ -33,12 +33,6 @@
    (index! forest)
    forest))
 
-(defn query-forest
-  "Finds the closest `k` vectors to vector `v` stored in the `forest`."
-  [forest k v]
-  (let [minhash (build-minhash v)]
-    {:top-k (query forest k minhash) :query-hash minhash}))
-
 (defn add-strings-to-forest
   "Convenience method for processing documents. Each item of feature-coll should be a map with
   :id and :features entries. The :id is the identifier for the minhash vector stored in the forest.
@@ -75,6 +69,12 @@
                                        :features (extract-text f)})
                               files)
                          :forest forest))
+
+(defn query-forest
+  "Finds the closest `k` vectors to vector `v` stored in the `forest`."
+  [forest k v]
+  (let [minhash (build-minhash v)]
+    {:top-k (query forest k minhash) :query-hash minhash}))
 
 (defn query-string
   "Convenience method for querying the forest for top-k similar strings. forest is the forest to be
