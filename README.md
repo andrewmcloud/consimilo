@@ -116,7 +116,7 @@ removing stopwords.
 ##### Querying forest with file
 
 ```clojure
-(def restuls (query-file k my-forest Fileobj))
+(def restuls (query-file my-forest k Fileobj))
 
 (println (:top-k results)) ;;returns a list of keys ordered by similarity
 (println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
