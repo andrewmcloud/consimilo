@@ -11,7 +11,7 @@
   [data]
   (get-hash "sha1" data))
 
-(defn get-hash-biginteger
-  "Converts the sha1 hash into a Java BigInteger"
+(defn get-hash-bigint
+  "Converts the sha1 hash into a Java bigint"
   [data]
-  (biginteger (sha1-hash data)))
+  (bigint (sha1-hash data)))

@@ -26,4 +26,4 @@
     (let [forest (new-forest)]
       (dorun (map-indexed #(add-lsh! forest (str (inc %)) %2) [minhash1 minhash2 minhash3]))
       (index! forest)
-      (is (= :1 (keyword (first (query-forest forest minhash1 1))))))))
+      (is (= :1 (keyword (first (query-forest forest 1 minhash1))))))))
