@@ -29,10 +29,10 @@
                                  ["1" "2" "4"]
                                  2)))))
   (testing "query-string"
-    (is (= '(:1 :2)
+    (is (= '(:1)
            (:top-k (query-string forest-from-strings
                                  "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year."
-                                 2)))))
+                                 1)))))
   (testing "query-string - forest built form files incrementally"
     (is (= '(:test1.txt)
            (:top-k (query-string forest-from-files
@@ -40,10 +40,10 @@
                                  1)))))
 
   (testing "query-file"
-    (is (= '(:1 :2)
+    (is (= '(:1)
            (:top-k (query-file forest-from-strings
                                (io/resource "test.txt")
-                               2))))))
+                               1))))))
 
 (deftest core-add-strings-test
   (testing "adding several strings to forest"
