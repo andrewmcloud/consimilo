@@ -26,24 +26,26 @@
   (testing "query api returns best results"
     (is (= '(:1 :2)
            (:top-k (query-forest forest-from-hash
-                                 ["1" "2" "4"]
-                                 2)))))
+                                 2
+                                 ["1" "2" "4"])))))
   (testing "query-string"
-    (is (= '(:1 :2)
+    (is (= '(:1)
            (:top-k (query-string forest-from-strings
-                                 "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year."
-                                 2)))))
+                                 1
+                                 "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year.")))))
+
   (testing "query-string - forest built form files incrementally"
     (is (= '(:test1.txt)
            (:top-k (query-string forest-from-files
-                                 "My name is Andrew and I am the author of this codebase. I live in Charleston, SC."
-                                 1)))))
+                                 1
+                                 "My name is Andrew and I am the author of this codebase. I live in Charleston, SC.")))))
 
   (testing "query-file"
-    (is (= '(:1 :2)
+    (is (= '(:1)
            (:top-k (query-file forest-from-strings
-                               (io/resource "test.txt")
-                               2))))))
+                               1
+                               (io/resource "test.txt")))))))
+
 
 (deftest core-add-strings-test
   (testing "adding several strings to forest"
@@ -53,12 +55,20 @@
 
 (deftest core-jaccard-k
   (testing "calculate jaccard on top-k results, string input"
-    (is (>= (:1 (jaccard-k forest-from-strings
-                           "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year."
-                           1))
+    (is (>= (:1 (similarity-k forest-from-strings
+                              1
+                              "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year."
+                              :sim-fn :jaccard))
             3/5)))
   (testing "calculate jaccard on top-k results, file input"
-    (is (>= (:1 (jaccard-k forest-from-strings
-                           (io/resource "test.txt")
-                           1))
-            3/5))))
+    (is (>= (:1 (similarity-k forest-from-strings
+                              1
+                              (io/resource "test.txt")
+                              :sim-fn :jaccard))
+            3/5)))
+  (testing "calculate jaccard on top-k results, feature-vector input"
+    (is (>= (:1 (similarity-k forest-from-hash
+                              1
+                              ["1" "2" "3"]
+                              :sim-fn :jaccard))
+            1))))

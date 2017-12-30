@@ -7,8 +7,7 @@
                                             elementwise-min
                                             scalar-and
                                             scalar-mod
-                                            scalar-mul
-                                            jaccard]]
+                                            scalar-mul]]
             [clojure.core :exclude [rand-int]]))
 
 ;; large prime
@@ -52,7 +51,6 @@
     (-> (scalar-mul a hv)
         (elementwise-add b)
         (scalar-mod mersenne)
-        ;(scalar-and max-hash))))
         (elementwise-min hashvalues))))
 
 (defn build-minhash

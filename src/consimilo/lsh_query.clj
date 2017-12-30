@@ -7,7 +7,8 @@
                                         tree-keys
                                         v>=v
                                         v=v]]
-            [config.core :refer [env]]))
+            [config.core :refer [env]]
+            [clojure.tools.logging :as log]))
 
 (defn- hashtable-lookup
   "returns collection of values for key in nested hashtable
@@ -56,10 +57,10 @@
 
 (defn query
   "returns a list of the keys of the top k-items most similar to minhash"
-  [forest minhash k-items]
+  [forest k-items minhash]
   (cond
-    (<= k-items 0) (print "k must be greater than zero")
-    (< (count minhash) (* k trees)) (print ("the numperm of Minhash out of range"))
+    (<= k-items 0) (log/warn "k must be greater than zero")
+    (< (count minhash) (* k trees)) (log/warn "the numperm of Minhash out of range")
     :else (->> (range k)
                reverse
                (mapcat #(query-k-prefix forest minhash %))
