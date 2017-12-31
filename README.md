@@ -1,5 +1,5 @@
 # consimilo
-
+[![Build Status](https://travis-ci.org/andrewmcloud/consimilo.svg?branch=master)](https://travis-ci.org/andrewmcloud/consimilo)
 ### A Clojure library for querying large data-sets on similarity
 
 consimilo is a library that utilizes locality sensitive hashing (implemented as lsh-forest) and minhashing, to support 
