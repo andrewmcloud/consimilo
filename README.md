@@ -1,6 +1,6 @@
 # consimilo
 
-### A Clojure library for querying large data-sets for similarity
+### A Clojure library for querying large data-sets on similarity
 
 consimilo is a library that utilizes locality sensitive hashing (implemented as lsh-forest) and minhashing, to support 
 *top-k* similar item queries. Finding similar items across expansive data-sets is a common problem that presents itself 
