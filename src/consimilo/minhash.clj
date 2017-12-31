@@ -5,16 +5,12 @@
             [config.core :refer [env]]
             [consimilo.minhash-util :refer [elementwise-add
                                             elementwise-min
-                                            scalar-and
                                             scalar-mod
                                             scalar-mul]]
             [clojure.core :exclude [rand-int]]))
 
-;; large prime
-(def mersenne (bigint (dec (bit-shift-left 1 61))))
-
-;; max-hash size, used to truncate minhash values
-(def max-hash (bigint (dec (bit-shift-left 1 32))))
+;; prime number larger than sha1 hash
+(def mersenne (dec (.shiftLeft (biginteger 1) (biginteger 181))))
 
 ;; random number seed
 (def seed (:seed env))

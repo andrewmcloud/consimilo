@@ -11,14 +11,6 @@
 (def big-coll-2 (bigint_vec 3 10))
 (def big-coll-3 [(bigint 3) (bigint 3) (bigint 2)])
 
-(deftest scalar-and-test
-  (let [result (scalar-and big-coll-1 2)]
-    (testing "functionality of scalar-and"
-      (is (= '(2 2 2) result)))
-    (testing "scalar-and returns collection of type bigint"
-      (is (= true (instance? BigInt (first result))))
-      (is (= true (instance? BigInt (last result)))))))
-
 (deftest scalar-mod-test
   (let [result (scalar-mod big-coll-1 2)]
     (testing "functionality of scalar-mod"
@@ -63,7 +55,7 @@
 
 (deftest cosine-distance-test
   (testing "cosine distance between two different vectors"
-    (is (= 9/100 (/ (Math/round (* 100 (cosine-distance [1 2 3 4 5] [1 2 3 6 7]))) 100))))
+    (is (= 9/100 (/ (Math/round ^float (* 100 (cosine-distance [1 2 3 4 5] [1 2 3 6 7]))) 100))))
   (testing "cosine distance between two equal vectors"
     (is (= 0.0 (cosine-distance [1 2 3 4 5] [1 2 3 4 5])))))
 

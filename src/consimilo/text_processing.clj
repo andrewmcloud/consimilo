@@ -1,11 +1,9 @@
 (ns consimilo.text-processing
   (:require [opennlp.nlp :refer [make-tokenizer]]
-            [pantomime.mime :refer [mime-type-of]]
             [pantomime.extract :as extract]
             [clojure.java.io :as io]
             [clojure.string :refer [lower-case
                                     split-lines]]
-            [config.core :refer [env]]
             [clojure.tools.logging :as log]))
 
 (def ^:private tokenize (make-tokenizer (io/resource "en-token.bin")))

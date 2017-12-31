@@ -11,8 +11,7 @@
             [clojure.tools.logging :as log]))
 
 (defn- hashtable-lookup
-  "returns collection of values for key in nested hashtable
-  {:tree {:key value}....}"
+  "returns collection of values for key in nested hashtable {:tree {:key value}....}"
   [hashtable key]
   (map #(get-in hashtable [% key]) (tree-keys (:trees env))))
 
@@ -60,7 +59,7 @@
   [forest k-items minhash]
   (cond
     (<= k-items 0) (log/warn "k must be greater than zero")
-    (< (count minhash) (* k trees)) (log/warn "the numperm of Minhash out of range")
+    (< (count minhash) (* k trees)) (log/warn "the perm of Minhash out of range")
     :else (->> (range k)
                reverse
                (mapcat #(query-k-prefix forest minhash %))

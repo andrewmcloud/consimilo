@@ -2,6 +2,7 @@
   (:require [consimilo.lsh-forest :refer [new-forest
                                           add-lsh!
                                           index!]]
+
             [consimilo.minhash :refer [build-minhash]]
             [consimilo.minhash-util :refer [jaccard-similarity
                                             hamming-distance
@@ -9,11 +10,8 @@
                                             zip-similarity]]
             [consimilo.lsh-query :refer [query]]
             [consimilo.text-processing :refer [tokenize-text
-                                               extract-text]])
-
-  (:import (clojure.lang IAtom)))
-
-;; TODO: add ability to serialize / deserialize forests
+                                               extract-text]]
+            [taoensso.nippy :as nippy]))
 
 (defn add-all-to-forest
   "Adds each vector in `feature-coll` to an lsh forest and returns the forest.
@@ -107,10 +105,10 @@
                 (extract-text file)))
 
 (defmulti similarity-k
-  "Query forest for top-k items, return pairs: {item-key, sim-fn}. Available similarity functions are Jaccard
-  similarity, cosine distance, and Hamming distance. sim-fn is defaulted to :jaccard, but can be overridden by passing
-  the optional :sim-fn key and :jaccard, :cosine, or :hamming. similarity-k Dispatches based on input: string, file,
-  or feature-vector."
+  "Query forest for top-k items, returns a hashmap: {item-key1 sim-fn-result1 item-key-k sim-fn-result-k}. Available
+  similarity functions are Jaccard similarity, cosine distance, and Hamming distance. sim-fn is defaulted to :jaccard,
+  but can be overridden by passing the optional :sim-fn key and :jaccard, :cosine, or :hamming. similarity-k Dispatches
+  based on input: string, file, or feature-vector."
   (fn [forest k input & {:keys [sim-fn stopwords?]
                          :or {sim-fn :jaccard stopwords? true}}]
     (cond
@@ -147,3 +145,16 @@
             :cosine cosine-distance
             :hamming hamming-distance)]
     (zip-similarity forest return f)))
+
+(defn freeze-forest
+  "Serializes forest and saves to a file. Forest should be created using one of the add-*-to-forest functions.
+  file-path should be a string representing the filepath. Returns the byte-array representation of the serialize
+  object and creates a file containing the byte-string representation of the serialized object."
+  [forest file-path]
+  (nippy/freeze-to-file file-path @forest))
+
+(defn thaw-forest
+  "Deserializes forest from file. file-path should be a string representing the filepath of the serialized object.
+  Returns an lsh-forest."
+  [file-path]
+  (atom (nippy/thaw-from-file file-path)))

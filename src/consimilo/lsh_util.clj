@@ -1,6 +1,4 @@
-(ns consimilo.lsh-util
-  (:require [config.core :refer [env]])
-  (:import (java.util Collections)))
+(ns consimilo.lsh-util)
 
 (defn- slice
   "Slices from start to end non incluseive."
@@ -18,7 +16,7 @@
   (* k trees))
 
 (defn keywordize
-  "Converts integer to keyword"
+  "if not keyword? i, converts i to keyword"
   [i]
   (if (keyword? i)
     i
