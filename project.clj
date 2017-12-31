@@ -1,8 +1,8 @@
-(defproject consimilo "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+(defproject consimilo "0.1.0"
+  :description "A Clojure library for querying large data-sets on similarity"
+  :url "http://github.com/andrewmcloud/consimilo"
+  :license {:name "Apache License 2.0"
+            :url "http://www.apache.org/licenses"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [yogthos/config "0.8"]
                  [clojure-opennlp "0.4.0"]
