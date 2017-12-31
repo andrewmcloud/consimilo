@@ -34,7 +34,7 @@ containing the individual features. `[{:id id1 :features [feature1 feature2 ... 
 Once your candidates vector is in the correct form, you can add the items to the forest:
 
 ```clojure
-(def my-forest (consimilo/add-all-to-forest candidates-vector))               ;;creates new forest, my-forest
+(def my-forest (consimilo/add-all-to-forest candidates-vector))           ;;creates new forest, my-forest
 ```
 
 You can continue to add to this forest by passing it as the first argument to `add-all-to-forest`. The forest data 
@@ -45,7 +45,7 @@ better to add all items to the forest at once or in the case of a live system, a
 offline and replace the production forest.
 
 ```clojure
-(consimilo/add-all-to-forest my-forest new-candidates-vector)                 ;;updates my-forest in place
+(consimilo/add-all-to-forest my-forest new-candidates-vector)             ;;updates my-forest in place
 ```
 
 #### Adding strings and files to a forest (helper functions)
@@ -69,7 +69,7 @@ To add a collection of strings to an **existing** forest and **do not remove** s
 ```clojure
 (consimilo/add-strings-to-forest [{:id id1 :features "my sample string 1"}
                         {:id id2 :features "my sample string 2"}]
-                       :forest my-forest                                      ;;updates my-forest in place
+                       :forest my-forest                                  ;;updates my-forest in place
                        :stopwords? false))
 ```
 
@@ -79,7 +79,7 @@ To add a collection of files to a **new** forest and **remove** stopwords:
 
 ```clojure
 (def my-forest (consimilo/add-files-to-forest
-                 [FileObj-1 FileObj-2 FileObj-3 FileObj-n]))                  ;;creates new forest, my-forest
+                 [FileObj-1 FileObj-2 FileObj-3 FileObj-n]))              ;;creates new forest, my-forest
 ```
 
 Note: when calling `add-files-to-forest` `:id` is auto-generated from the file name and `:features` are generated from 
