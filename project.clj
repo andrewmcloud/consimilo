@@ -8,6 +8,7 @@
                  [clojure-opennlp "0.4.0"]
                  [com.novemberain/pantomime "2.9.0"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [ch.qos.logback/logback-classic "1.1.3"]]
+                 [ch.qos.logback/logback-classic "1.1.3"]
+                 [com.taoensso/nippy "2.13.0"]]
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

@@ -4,7 +4,6 @@
                                         keywordize
                                         get-range]]))
 
-
 ;; number of trees in lshforest
 (def trees (:trees env))
 

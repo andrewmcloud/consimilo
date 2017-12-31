@@ -3,11 +3,6 @@
                                  union]]
             [clojure.tools.logging :as log]))
 
-(defn scalar-and
-  "performs a scalar bitwise on each element of vec and k"
-  [v k]
-  (mapv (fn [e] (and e (bigint k))) v))
-
 (defn scalar-mod
   "performs a scalar modulus on each element of vec and k"
   [v k]
@@ -23,21 +18,21 @@
   [v1 v2]
   (if (not= (count v1) (count v2))
     (log/error "cannot compute elementwise-add on 2 vectors of different length")
-    (mapv #(+ %1 %2) v1 v2)))
+    (mapv + v1 v2)))
 
 (defn elementwise-min
   "performs elementwise minimum between vectors v1 and v2"
   [v1 v2]
   (if (not= (count v1) (count v2))
     (log/error "cannot compute elementwise-min on 2 vectors of different length")
-    (mapv #(min %1 %2) v1 v2)))
+    (mapv min v1 v2)))
 
 (defn dot
   "computes the dot product of two vectors v1 and v2"
   [v1 v2]
   (if (not= (count v1) (count v2))
     (log/error "cannot compute dot product on 2 vectors of different length")
-    (reduce + (map #(* %1 %2) v1 v2))))
+    (reduce + (map * v1 v2))))
 
 (defn l2nrm
   "computes the l2 norm of vector v"
@@ -62,10 +57,7 @@
   [v1 v2]
   (if (not= (count v1) (count v2))
     (log/error "cannot compute hamming-distance between 2 vectors of different length")
-    (do
-      (->> (map #(= %1 %2) v1 v2)
-           (filter false?)
-           count))))
+    (->> (map = v1 v2) (filter false?) count)))
 
 (defn jaccard-similarity
   "performs jaccard on vectors self and other"

@@ -12,7 +12,7 @@
 (def forest-from-hash (add-all-to-forest [minhash1 minhash2 minhash3]))
 (def forest-from-strings (add-strings-to-forest [{:id "1" :features "My name is Andrew and I live in Charleston SC. I am staying home for Christmas this year."}
                                                  {:id "2" :features "My name is Christina and I live in West Ashley SC. I am not staying home for Christmas this year."}
-                                                 {:id "3" :features "My name is David and I live in Summerville, SC. I am going to go to Florida for Christmas this year."}]))
+                                                 {:id "3" :features "My name is David and I reside in Summerville, SC. I am going to go Florida for Christmas this year."}]))
 (def forest-from-one-file (add-files-to-forest [(io/as-file (io/resource "test.txt"))]))
 (def forest-from-files (add-files-to-forest [(io/as-file (io/resource "test1.txt"))] :forest forest-from-one-file))
 
@@ -29,9 +29,9 @@
                                  2
                                  ["1" "2" "4"])))))
   (testing "query-string"
-    (is (= '(:1)
+    (is (= '(:1 :2)
            (:top-k (query-string forest-from-strings
-                                 1
+                                 2
                                  "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year.")))))
 
   (testing "query-string - forest built form files incrementally"
@@ -41,9 +41,9 @@
                                  "My name is Andrew and I am the author of this codebase. I live in Charleston, SC.")))))
 
   (testing "query-file"
-    (is (= '(:1)
+    (is (= '(:1 :2)
            (:top-k (query-file forest-from-strings
-                               1
+                               2
                                (io/resource "test.txt")))))))
 
 
@@ -72,3 +72,11 @@
                               ["1" "2" "3"]
                               :sim-fn :jaccard))
             1))))
+
+(deftest serialize-test
+  (testing "save forest to file, load forest, query"
+    (let [loaded-forest (thaw-forest (io/resource "testforest"))]
+      (is (= '(:1 :2)
+             (:top-k (query-string loaded-forest
+                                   2
+                                   "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year.")))))))
