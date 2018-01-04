@@ -62,23 +62,10 @@
 
 (defn valid-input?
   "validates the input of add-*-to-forest functions"
-  [feature-coll]
-  (and (->> feature-coll
-            (map #(and (contains? % :id) (contains? % :features)))
-            (every? true?))
-       (->> feature-coll
-            (map #(coll? (:features %)))
-            (every? true?))))
-
-(defn valid-input-add-strings?
-  "validates the input of add-*-to-forest functions"
-  [feature-coll]
-  (and (->> feature-coll
-            (map #(and (contains? % :id) (contains? % :features)))
-            (every? true?))
-       (->> feature-coll
-            (map #(string? (:features %)))
-            (every? true?))))
+  [feature-coll pred]
+  (->> feature-coll
+       (map #(and (contains? % :id) (contains? % :features) (pred (:features %))))
+       (every? true?)))
 
 (defn valid-input-add-files?
   "validates the input of add-*-to-forest functions"

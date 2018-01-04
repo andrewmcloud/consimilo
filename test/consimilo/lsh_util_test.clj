@@ -81,19 +81,19 @@
 
 (deftest valid-input?-test
   (testing "valid input, correct keys and :features is a collection"
-    (is (= true (valid-input? [{:id 1 :features [1]} {:id 2 :features [2]}]))))
+    (is (= true (valid-input? [{:id 1 :features [1]} {:id 2 :features [2]}] coll?))))
   (testing "invalid input, incorrect keys and :features is a collection"
-    (is (= false (valid-input? [{:id 1 :feat [1]} {:id 2 :features [2]}]))))
+    (is (= false (valid-input? [{:id 1 :feat [1]} {:id 2 :features [2]}] coll?))))
   (testing "invalid input, correct keys but :features is not a collection"
-    (is (= false (valid-input? [{:id 1 :features [1]} {:id 2 :features 2}])))))
+    (is (= false (valid-input? [{:id 1 :features [1]} {:id 2 :features 2}] coll?)))))
 
 (deftest valid-input-add-strings?-test
   (testing "valid input, correct keys and :features is a collection"
-    (is (= true (valid-input-add-strings? [{:id 1 :features "my name is andrew"} {:id 2 :features "i like clojure"}]))))
+    (is (= true (valid-input? [{:id 1 :features "my name is andrew"} {:id 2 :features "i like clojure"}] string?))))
   (testing "invalid input, incorrect keys and :features is a collection"
-    (is (= false (valid-input-add-strings? [{:id 1 :feat "my name is andrew"} {:id 2 :features "i like clojure"}]))))
+    (is (= false (valid-input? [{:id 1 :feat "my name is andrew"} {:id 2 :features "i like clojure"}] string?))))
   (testing "invalid input, correct keys but :features is a collection instead of string"
-    (is (= false (valid-input-add-strings? [{:id 1 :features "my name is andrew"} {:id 2 :features [2]}])))))
+    (is (= false (valid-input? [{:id 1 :features "my name is andrew"} {:id 2 :features [2]}] string?)))))
 
 (deftest valid-input-add-files?-test
   (testing "valid input, multiple files in collection"

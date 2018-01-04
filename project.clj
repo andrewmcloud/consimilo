@@ -3,7 +3,7 @@
   :url "http://github.com/andrewmcloud/consimilo"
   :license {:name "Apache License 2.0"
             :url "http://www.apache.org/licenses"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [yogthos/config "0.8"]
                  [clojure-opennlp "0.4.0"]
                  [com.novemberain/pantomime "2.9.0"]
