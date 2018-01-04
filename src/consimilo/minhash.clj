@@ -7,16 +7,27 @@
                                             elementwise-min
                                             scalar-mod
                                             scalar-mul]]
-            [clojure.core :exclude [rand-int]]))
+            [clojure.core :exclude [rand-int]]
+            [clojure.tools.logging :as log]))
 
 ;; prime number larger than sha1 hash
 (def mersenne (dec (.shiftLeft (biginteger 1) (biginteger 181))))
 
 ;; random number seed
-(def seed (:seed env))
+(def seed (if (:seed env)
+            (:seed env)
+            (do
+              (log/warn "Random number seed is not configured; please ensure :seed is in the config.edn file.
+                        Defaulting to 1.")
+              1)))
 
 ;; minhash dimension
-(def perms (:perms env))
+(def perms (if (:perms env)
+             (:perms env)
+             (do
+               (log/warn "Number of permutations cannot be configured; please ensure :perms is in the config.edn file.
+                         Defaulting to 128.")
+               128)))
 
 (defn- init-hashvalues
   "initializes minhash signature to infinity"

@@ -2,13 +2,24 @@
   (:require [config.core :refer [env]]
             [consimilo.lsh-util :refer [get-hashranges
                                         keywordize
-                                        get-range]]))
+                                        get-range]]
+            [clojure.tools.logging :as log]))
 
 ;; number of trees in lshforest
-(def trees (:trees env))
+(def trees (if (:trees env)
+             (:trees env)
+             (do
+               (log/warn "Number of trees cannot be configured; please ensure :trees is in the config.edn file.
+                         Defaulting to 8.")
+               8)))
 
 ;; length of minhash slices
-(def k (int (/ (:perms env) trees)))
+(def k (if (:perms env)
+         (int (/ (:perms env) trees))
+         (do
+           (log/warn "Number of permutations cannot be configured; please ensure :perms is in the config.edn file.
+                     Defaulting to 128.")
+           128)))
 
 ;; range of minhash
 (def hashrange (get-range k trees))

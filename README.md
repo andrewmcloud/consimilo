@@ -1,5 +1,8 @@
 # consimilo
+
 [![Build Status](https://travis-ci.org/andrewmcloud/consimilo.svg?branch=master)](https://travis-ci.org/andrewmcloud/consimilo)
+[![Clojars Project](https://img.shields.io/clojars/v/consimilo.svg)](https://clojars.org/consimilo)
+
 ### A Clojure library for querying large data-sets on similarity
 
 consimilo is a library that utilizes locality sensitive hashing (implemented as lsh-forest) and minhashing, to support 
@@ -156,6 +159,17 @@ To load a my-forest from a file:
 ```clojure
 (def my-forest (consimilo/thaw-forest "/tmp/my-saved-forest"))
 ```
+
+## Configuration
+
+consimilo uses [config](https://github.com/yogthos/config) to manage configuration. consimilo has three configurable 
+options: 
+   * Number of trees in the forest (default 8): `:trees`
+   * Number of permutation functions used to build the minhash (default 128): `:perms`
+   * Random number seed used to generate minhash functions (default 1) `:seed`
+   
+The defaults should work well in most cases, however they may be overridden by placing a config.edn file in the 
+resources directory of your project. See [`config.edn`](./resources/config.edn). 
 
 ## Contributions / Issues
 

@@ -2,10 +2,8 @@
   (:require [consimilo.lsh-forest :refer [new-forest
                                           add-lsh!
                                           index!]]
-            [consimilo.lsh-util :refer [valid-input-add-strings?
-                                        valid-input-add-files?
+            [consimilo.lsh-util :refer [valid-input-add-files?
                                         valid-input?]]
-
             [consimilo.minhash :refer [build-minhash]]
             [consimilo.minhash-util :refer [jaccard-similarity
                                             hamming-distance
@@ -31,7 +29,7 @@
   ([feature-coll]
    (add-all-to-forest (new-forest) feature-coll))
   ([forest feature-coll]
-   (if (valid-input? feature-coll)
+   (if (valid-input? feature-coll coll?)
      (do
        (dorun (pmap #(add-lsh! forest (:id %) (build-minhash (:features %))) feature-coll))
        (index! forest)
@@ -53,7 +51,7 @@
 
   [feature-coll & {:keys [forest remove-stopwords?]
                    :or {forest (new-forest) remove-stopwords? true}}]
-  (if (valid-input-add-strings? feature-coll)
+  (if (valid-input? feature-coll string?)
     (add-all-to-forest forest
                        (map #(assoc % :features
                                       (tokenize-text (:features %)))
