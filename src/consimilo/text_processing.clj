@@ -10,18 +10,18 @@
 (def ^:private stopwords (set (split-lines (slurp (io/resource "stopwords.txt")))))
 
 (defn- remove-stopwords
-  "If stopwords?: returns tokenized-text with stopwords removed, else: returns tokenized-text unaltered"
-  [stopwords? tokenized-text]
-  (if stopwords?
+  "If remove-stopwords?: returns tokenized-text with stopwords removed, else: returns tokenized-text unaltered"
+  [remove-stopwords? tokenized-text]
+  (if remove-stopwords?
     (remove stopwords tokenized-text)
     tokenized-text))
 
 (defn tokenize-text
-  "Tokenizes a string of text. If stopwords?: removes stopwords from token collection"
-  [text & {:keys [stopwords?] :or {stopwords? true}}]
+  "Tokenizes a string of text. If remove-stopwords?: removes stopwords from token collection"
+  [text & {:keys [remove-stopwords?] :or {remove-stopwords? true}}]
   (->> (lower-case text)
        tokenize
-       (remove-stopwords stopwords?)))
+       (remove-stopwords remove-stopwords?)))
 
 ;;Not currently used
 (defn shingle

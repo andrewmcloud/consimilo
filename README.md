@@ -4,12 +4,12 @@
 
 consimilo is a library that utilizes locality sensitive hashing (implemented as lsh-forest) and minhashing, to support 
 *top-k* similar item queries. Finding similar items across expansive data-sets is a common problem that presents itself 
-in many real world applications (e.g. finding articles from the same source, plagiarism detection, collaborative filtering, 
-context filtering, document similarity, etc...). Searching a corpus for *top-k* similary items quickly grows to 
-an unwieldy complexity at relatively small corpus sizes *(n choose 2)*. LSH reduces the search space by "hashing" items 
-in such a way that collisions occur as a result of similarity. Once the items are hashed and indexed the lsh-forest 
-supports a *top-k* most similar items query of ~*O(log n)*. There is an accuracy trade-off that comes with the enormous 
-increase in query speed. More information can be found in chapter 3 of 
+in many real world applications (e.g. finding articles from the same source, plagiarism detection, collaborative 
+filtering, context filtering, document similarity, etc...). Searching a corpus for *top-k* similary items quickly grows 
+to an unwieldy complexity at relatively small corpus sizes *(n choose 2)*. LSH reduces the search space by "hashing" 
+items in such a way that collisions occur as a result of similarity. Once the items are hashed and indexed the 
+lsh-forest supports a *top-k* most similar items query of ~*O(log n)*. There is an accuracy trade-off that comes with 
+the enormous increase in query speed. More information can be found in chapter 3 of 
 [Mining Massive Datasets](http://infolab.stanford.edu/~ullman/mmds/ch3.pdf).
 
 ## Getting Started
@@ -50,9 +50,10 @@ offline and replace the production forest.
 
 #### Adding strings and files to a forest (helper functions)
 
-consimilo provides helper functions for constructing feature vectors from strings and files. By default, a new forest is 
-created and stopwords are removed. You may add to an existing forest and/or include stopwords via optional parameters 
-`:forest` `:stopwords`. The optional parameters are defaulted to `:forest (new-forest)` `:stopwords? true`.
+consimilo provides helper functions for constructing feature vectors from strings and files. By default, a new forest 
+is created and stopwords are removed. You may add to an existing forest and/or include stopwords via optional 
+parameters `:forest` `:stopwords`. The optional parameters are defaulted to `:forest (new-forest)` `:remove-stopwords? 
+true`.
 
 ##### Adding documents/strings to a forest
 
@@ -70,7 +71,7 @@ To add a collection of strings to an **existing** forest and **do not remove** s
 (consimilo/add-strings-to-forest [{:id id1 :features "my sample string 1"}
                         {:id id2 :features "my sample string 2"}]
                        :forest my-forest                                      ;;updates my-forest in place
-                       :stopwords? false))
+                       :remove-stopwords? false))
 ```
 
 ##### Adding files to a forest
@@ -100,7 +101,7 @@ Once you have your forest `my-forest` built, you can query for `k` most similar 
 #### Querying a forest with strings and files (helper functions)
 
 consimilo provides helper functions for querying the forest with strings and files. The helper functions `query-string` 
-and `query-file` have an optional parameter `:stopwords?` which is defaulted `true`, removing stopwords. Queries 
+and `query-file` have an optional parameter `:remove-stopwords?` which is defaulted `true`, removing stopwords. Queries 
 against strings and files should be made using the same tokenization scheme used to input items in the forest 
 (stopwords present or removed).
 
@@ -127,8 +128,8 @@ against strings and files should be made using the same tokenization scheme used
 consimilo provides functions for calculating approximate distance / similarity between the query and *top-k* results. 
 The function `similar-k` accepts optional parameters to specify which distance / similarity function should be used. 
 For calculating Jaccard similarity, use: `:sim-fn :jaccard`, for calculating Hamming distance, use: `:sim-fn :hamming`, 
-and for calculating cosine distance, use: `:sim-fn :cosine`. `similar-k` returns a hash-map, `keys` are the *top-k* ids and 
-`vals` are the similarity / distance. As with the other query functions, queries against strings and files 
+and for calculating cosine distance, use: `:sim-fn :cosine`. `similar-k` returns a hash-map, `keys` are the *top-k* ids 
+and `vals` are the similarity / distance. As with the other query functions, queries against strings and files 
 should be made using the same tokenization scheme used to input the items in the forest (stopwords present or removed).
 
 ```clojure

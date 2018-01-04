@@ -41,7 +41,7 @@
   of documents with varying feature sizes. One minhash should be created for
   each document"
   [hashvalues feature]
-  (let [hv (get-hash-bigint feature)
+  (let [hv (get-hash-bigint (str feature))
         a (:a permutations)
         b (:b permutations)]
     (-> (scalar-mul a hv)

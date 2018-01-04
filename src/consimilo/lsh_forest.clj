@@ -10,7 +10,8 @@
                                          sort-tree
                                          trees]]
             [consimilo.lsh-query :refer [query]]
-            [config.core :refer [env]]))
+            [config.core :refer [env]]
+            [clojure.tools.logging :as log]))
 
 (defn new-forest
   "Create new empty initialized forest structure."
@@ -23,8 +24,8 @@
   "add minhash to lsh-forest. key must be a string, will be converted to keyword"
   [forest key minhash]
   (cond
-    (get-in @forest [:keys (keywordize key)]) (print "key already added to hash")
-    (< (count minhash) hashrange) (print "minhash is not correct permutation size")
+    (get-in @forest [:keys (keywordize key)]) (log/warn "key already added to hash")
+    (< (count minhash) hashrange) (log/warn "minhash is not correct permutation size")
     :else (plant-trees! forest key (slice-minhash minhash hashranges))))
 
 (defn index!
