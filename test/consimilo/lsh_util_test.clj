@@ -77,4 +77,30 @@
         sorted-vec [[0 1 2] [1 2 3] [2 3 4] [3 4 5] [4 5 6] [5 6 7] [6 7 8] [7 8 9] [8 9 0]]]
     (testing "search for min"
       (is (= 2
-           (private-pred-search #(>= (compare (get sorted-vec %) [2 3 4]) 0) (count sorted-vec)))))))
+             (private-pred-search #(>= (compare (get sorted-vec %) [2 3 4]) 0) (count sorted-vec)))))))
+
+(deftest valid-input?-test
+  (testing "valid input, correct keys and :features is a collection"
+    (is (= true (valid-input? [{:id 1 :features [1]} {:id 2 :features [2]}]))))
+  (testing "invalid input, incorrect keys and :features is a collection"
+    (is (= false (valid-input? [{:id 1 :feat [1]} {:id 2 :features [2]}]))))
+  (testing "invalid input, correct keys but :features is not a collection"
+    (is (= false (valid-input? [{:id 1 :features [1]} {:id 2 :features 2}])))))
+
+(deftest valid-input-add-strings?-test
+  (testing "valid input, correct keys and :features is a collection"
+    (is (= true (valid-input-add-strings? [{:id 1 :features "my name is andrew"} {:id 2 :features "i like clojure"}]))))
+  (testing "invalid input, incorrect keys and :features is a collection"
+    (is (= false (valid-input-add-strings? [{:id 1 :feat "my name is andrew"} {:id 2 :features "i like clojure"}]))))
+  (testing "invalid input, correct keys but :features is a collection instead of string"
+    (is (= false (valid-input-add-strings? [{:id 1 :features "my name is andrew"} {:id 2 :features [2]}])))))
+
+(deftest valid-input-add-files?-test
+  (testing "valid input, multiple files in collection"
+    (is (= true (valid-input-add-files? [(clojure.java.io/as-file "t1")
+                                         (clojure.java.io/as-file "t1")
+                                         (clojure.java.io/as-file "t2")]))))
+  (testing "valid input, single file in collection"
+    (is (= true (valid-input-add-files? [(clojure.java.io/file "t1")]))))
+  (testing "invalid input, no files in collection"
+    (is (= false (valid-input-add-files? [{:id 1 :features [1]} {:id 2 :features 2}])))))

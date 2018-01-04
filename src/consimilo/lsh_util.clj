@@ -59,3 +59,31 @@
   is the end of that bucket."
   [minhash hashranges]
   (mapv #(slice (first %) (last %) minhash) hashranges))
+
+(defn valid-input?
+  "validates the input of add-*-to-forest functions"
+  [feature-coll]
+  (and (->> feature-coll
+            (map #(and (contains? % :id) (contains? % :features)))
+            (every? true?))
+       (->> feature-coll
+            (map #(coll? (:features %)))
+            (every? true?))))
+
+(defn valid-input-add-strings?
+  "validates the input of add-*-to-forest functions"
+  [feature-coll]
+  (and (->> feature-coll
+            (map #(and (contains? % :id) (contains? % :features)))
+            (every? true?))
+       (->> feature-coll
+            (map #(string? (:features %)))
+            (every? true?))))
+
+(defn valid-input-add-files?
+  "validates the input of add-*-to-forest functions"
+  [files]
+  (and (coll? files)
+       (->> files
+            (map #(instance? java.io.File %))
+            (every? true?))))
