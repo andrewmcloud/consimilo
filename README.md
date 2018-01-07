@@ -8,7 +8,7 @@
 consimilo is a library that utilizes locality sensitive hashing (implemented as lsh-forest) and minhashing, to support 
 *top-k* similar item queries. Finding similar items across expansive data-sets is a common problem that presents itself 
 in many real world applications (e.g. finding articles from the same source, plagiarism detection, collaborative 
-filtering, context filtering, document similarity, etc...). Searching a corpus for *top-k* similary items quickly grows 
+filtering, context filtering, document similarity, etc...). Searching a corpus for *top-k* similar items quickly grows 
 to an unwieldy complexity at relatively small corpus sizes *(n choose 2)*. LSH reduces the search space by "hashing" 
 items in such a way that collisions occur as a result of similarity. Once the items are hashed and indexed the 
 lsh-forest supports a *top-k* most similar items query of ~*O(log n)*. There is an accuracy trade-off that comes with 
@@ -109,7 +109,7 @@ and `query-file` have an optional parameter `:remove-stopwords?` which is defaul
 against strings and files should be made using the same tokenization scheme used to input items in the forest 
 (stopwords present or removed).
 
-Querying a forest with a string
+Querying a forest with a string:
 
 ```clojure
 (def results (consimilo/query-string my-forest k "my query string"))
@@ -118,7 +118,7 @@ Querying a forest with a string
 (println (:query-hash results)) ;;returns the minhash of the query. Utilized to calculate similarity.
 ```  
 
-Querying a forest with a file
+Querying a forest with a file:
 
 ```clojure
 (def results (consimilo/query-file my-forest k Fileobj))
@@ -152,14 +152,14 @@ consimilo will dispatch to the correct query function based on query type (strin
 ## Saving and loading forests
 
 consimilo uses [Nippy](https://github.com/ptaoussanis/nippy) to provide simple, robust, serialization / deserialization 
-of your lsh-forests.
+of your forests.
 
-Serialize and save my-forest to a file:
+Serialize and save a forest to a file:
 ```clojure
 (consimilo/freeze-forest my-forest "/tmp/my-saved-forest")
 ```
 
-Load my-forest from a file:
+Load a forest from a file:
 ```clojure
 (def my-forest (consimilo/thaw-forest "/tmp/my-saved-forest"))
 ```
