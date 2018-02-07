@@ -140,7 +140,7 @@ should be made using the same tokenization scheme used to input the items in the
 consimilo will dispatch to the correct query function based on query type (string, file, collection of features). 
 
 ```clojure
-(def similar-items (consimilo/similar-k 
+(def similar-items (consimilo/similarity-k 
                      my-forest
                      k
                      query
