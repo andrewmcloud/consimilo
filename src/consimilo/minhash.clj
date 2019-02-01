@@ -1,46 +1,26 @@
 (ns consimilo.minhash
-  (:require [consimilo.random-seed :refer [set-random-seed!
-                                           rand-vec]]
-            [consimilo.sha1 :refer [get-hash-bigint]]
-            [config.core :refer [env]]
-            [consimilo.minhash-util :refer [elementwise-add
-                                            elementwise-min
-                                            scalar-mod
-                                            scalar-mul]]
+  (:require [consimilo.random-seed :as rseed]
+            [consimilo.sha1 :as sha]
+            [consimilo.config :as config]
+            [consimilo.minhash-util :as util]
             [clojure.core :exclude [rand-int]]
             [clojure.tools.logging :as log]))
 
 ;; prime number larger than sha1 hash
-(def mersenne (dec (.shiftLeft (biginteger 1) (biginteger 181))))
-
-;; random number seed
-(def seed (if (:seed env)
-            (:seed env)
-            (do
-              (log/warn "Random number seed is not configured; please ensure :seed is in the config.edn file.
-                        Defaulting to 1.")
-              1)))
-
-;; minhash dimension
-(def perms (if (:perms env)
-             (:perms env)
-             (do
-               (log/warn "Number of permutations cannot be configured; please ensure :perms is in the config.edn file.
-                         Defaulting to 128.")
-               128)))
+(def large-prime 3064991081731777716716694054300618367237478244367416721N)
 
 (defn- init-hashvalues
   "initializes minhash signature to infinity"
   []
-  (vec (repeat perms mersenne)))
+  (vec (repeat config/perms large-prime)))
 
 (defn- build-permutations
   "builds seeded random number populated vectors to simulate
    the vector permutations a and b"
   []
-  (set-random-seed! seed)
-  {:a (rand-vec perms mersenne)
-   :b (rand-vec perms mersenne)})
+  (rseed/set-random-seed! config/seed)
+  {:a (rseed/rand-vec config/perms large-prime)
+   :b (rseed/rand-vec config/perms large-prime)})
 
 ;; build seeded vector permutations once. They are the same for every minhash
 ;; which allows incremental minhashing a single vector at a time.
@@ -52,13 +32,13 @@
   of documents with varying feature sizes. One minhash should be created for
   each document"
   [hashvalues feature]
-  (let [hv (get-hash-bigint (str feature))
+  (let [hv (sha/get-hash-bigint (str feature))
         a (:a permutations)
         b (:b permutations)]
-    (-> (scalar-mul a hv)
-        (elementwise-add b)
-        (scalar-mod mersenne)
-        (elementwise-min hashvalues))))
+    (-> (util/scalar-mul a hv)
+        (util/elementwise-add b)
+        (util/scalar-mod large-prime)
+        (util/elementwise-min hashvalues))))
 
 (defn build-minhash
   "iterates through a document feature collection: ['token-1' token-2' ... 'token-n],
@@ -75,5 +55,5 @@
   "merges two minhashes together by taking the elementwise minimum between the two
   minhash vectors"
   [minhash1 minhash2]
-  (elementwise-min minhash1 minhash2))
+  (util/elementwise-min minhash1 minhash2))
 

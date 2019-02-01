@@ -76,7 +76,7 @@
 (deftest serialize-test
   (testing "save forest to file, load forest, query"
     (let [loaded-forest (thaw-forest (io/resource "testforest"))]
-      (is (= '(:1 :2)
+      (is (= '(:2 :3)
              (:top-k (query-string loaded-forest
                                    2
                                    "My name is Bonnie and I live in Charleston SC. I am staying home for Christmas this year.")))))))

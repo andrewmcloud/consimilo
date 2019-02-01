@@ -1,7 +1,8 @@
 (ns consimilo.minhash-test
   (:require [clojure.test :refer :all]
             [clojure.set :refer [intersection]]
-            [consimilo.minhash :refer :all])
+            [consimilo.minhash :refer :all]
+            [consimilo.config :refer :all])
   (:import (clojure.lang BigInt)))
 
 (defn build-bigint-coll
@@ -16,7 +17,7 @@
   (let [private-init-hashvals #'consimilo.minhash/init-hashvalues
         hashvals (private-init-hashvals)]
     (testing "init-hahsvalues returns a collection of mersenne primes"
-      (is (every? #(= mersenne %) hashvals)))
+      (is (every? #(= large-prime %) hashvals)))
     (testing "init-hashvalues returns a collection of type bigint"
       (is (every? #(instance? BigInt %) hashvals)))
     (testing "init-hashvalues returns a collection of length perms"

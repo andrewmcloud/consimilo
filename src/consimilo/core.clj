@@ -1,17 +1,10 @@
 (ns consimilo.core
-  (:require [consimilo.lsh-forest :refer [new-forest
-                                          add-lsh!
-                                          index!]]
-            [consimilo.lsh-util :refer [valid-input-add-files?
-                                        valid-input?]]
-            [consimilo.minhash :refer [build-minhash]]
-            [consimilo.minhash-util :refer [jaccard-similarity
-                                            hamming-distance
-                                            cosine-distance
-                                            zip-similarity]]
-            [consimilo.lsh-query :refer [query]]
-            [consimilo.text-processing :refer [tokenize-text
-                                               extract-text]]
+  (:require [consimilo.lsh-forest :as f]
+            [consimilo.lsh-util :as util]
+            [consimilo.minhash :as mh]
+            [consimilo.minhash-util :as mhu]
+            [consimilo.lsh-query :as q]
+            [consimilo.text-processing :as text]
             [taoensso.nippy :as nippy]
             [clojure.tools.logging :as log]))
 
@@ -27,12 +20,12 @@
   Note: items should be loaded into the forest as few times as possible in large chunks. An expensive
   sort called after items are added to the forest to enable ~log(n) queries."
   ([feature-coll]
-   (add-all-to-forest (new-forest) feature-coll))
+   (add-all-to-forest (f/new-forest) feature-coll))
   ([forest feature-coll]
-   (if (valid-input? feature-coll coll?)
+   (if (util/valid-input? feature-coll coll?)
      (do
-       (dorun (pmap #(add-lsh! forest (:id %) (build-minhash (:features %))) feature-coll))
-       (index! forest)
+       (dorun (pmap #(f/add-lsh! forest (:id %) (mh/build-minhash (:features %))) feature-coll))
+       (f/index! forest)
        forest)
      (log/warn "invalid input, feature-coll must be a collection of maps, each having keys :id and :features;
                :features must be a collection"))))
@@ -49,12 +42,11 @@
   Note: items should be loaded into the forest as few times as possible in large chunks. An expensive
   sort called after items are added to the forest to enable ~log(n) queries."
 
-  [feature-coll & {:keys [forest remove-stopwords?]
-                   :or {forest (new-forest) remove-stopwords? true}}]
-  (if (valid-input? feature-coll string?)
+  [feature-coll & {:keys [forest] :or {forest (f/new-forest)}}]
+  (if (util/valid-input? feature-coll string?)
     (add-all-to-forest forest
                        (map #(assoc % :features
-                                      (tokenize-text (:features %)))
+                                      (text/tokenize-text (:features %)))
                             feature-coll))
     (log/warn "invalid input, feature-coll must be a collection of maps, each having keys :id and :features;
                :features must be a string")))
@@ -70,11 +62,10 @@
 
   Note: items should be loaded into the forest as few times as possible in large chunks. An expensive
   sort called after items are added to the forest to enable ~log(n) queries."
-  [files & {:keys [forest remove-stopwords?]
-            :or {forest (new-forest) remove-stopwords? true}}]
-  (if (valid-input-add-files? files)
+  [files & {:keys [forest] :or {forest (f/new-forest)}}]
+  (if (util/valid-input-add-files? files)
     (add-strings-to-forest (map (fn [f] {:id (.getName f)
-                                         :features (extract-text f)})
+                                         :features (text/extract-text f)})
                                 files)
                            :forest forest)
     (log/warn "invalid input, files must be a collection of file objects")))
@@ -82,8 +73,8 @@
 (defn query-forest
   "Finds the closest `k` vectors to vector `v` stored in the `forest`."
   [forest k v]
-  (let [minhash (build-minhash v)]
-    {:top-k (query forest k minhash) :query-hash minhash}))
+  (let [minhash (mh/build-minhash v)]
+    {:top-k (q/query forest k minhash) :query-hash minhash}))
 
 (defn query-string
   "Convenience method for querying the forest for top-k similar strings. forest is the forest to be
@@ -94,11 +85,8 @@
   Optional Keyword Arguments: :remove-stopwords? - if true: remove stopwords; default: true
 
   Note: for best results query the forest utilizing the same tokenization scheme used to create it"
-  [forest k string & {:keys [remove-stopwords?]
-                      :or {remove-stopwords? true}}]
-  (query-forest forest
-                k
-                (tokenize-text string)))
+  [forest k string]
+  (query-forest forest k (text/tokenize-text string)))
 
 (defn query-file
   "Convenience method for querying the forest for top-k similar files. Forest is the forest to be
@@ -109,53 +97,44 @@
   Optional Keyword Arguments: :remove-stopwords? - if true: remove stopwords; default: true
 
   Note: for best results query the forest utilizing the same tokenization scheme used to create it"
-  [forest k file & {:keys [remove-stopwords?]
-                    :or {remove-stopwords? true}}]
-  (query-string forest
-                k
-                (extract-text file)))
+  [forest k file]
+  (query-string forest k (text/extract-text file)))
+
+(defn get-sim-fn
+  [key]
+  (condp = key
+    :jaccard mhu/jaccard-similarity
+    :consine mhu/cosine-distance
+    :hamming mhu/hamming-distance))
 
 (defmulti similarity-k
   "Query forest for top-k items, returns a hashmap: {item-key1 sim-fn-result1 item-key-k sim-fn-result-k}. Available
   similarity functions are Jaccard similarity, cosine distance, and Hamming distance. sim-fn is defaulted to :jaccard,
   but can be overridden by passing the optional :sim-fn key and :jaccard, :cosine, or :hamming. similarity-k Dispatches
   based on input: string, file, or feature-vector."
-  (fn [forest k input & {:keys [sim-fn remove-stopwords?]
-                         :or {sim-fn :jaccard remove-stopwords? true}}]
-    (cond
-      (coll? input) :feature-vec
-      (string? input) :string
-      :else :file)))
+  (fn [forest k input & {:keys [sim-fn] :or {sim-fn :jaccard}}]
+    (condp #(%1 %2) input
+      coll? :feature-vec
+      string? :string
+      :file)))
 
 (defmethod similarity-k :string
-  [forest k string & {:keys [sim-fn remove-stopwords?]
-                      :or {sim-fn :jaccard remove-stopwords? true}}]
-  (let [return (query-string forest k string :remove-stopwords? remove-stopwords?)
-        f (condp = sim-fn
-            :jaccard jaccard-similarity
-            :cosine cosine-distance
-            :hamming hamming-distance)]
-    (zip-similarity forest return f)))
+  [forest k string & {:keys [sim-fn] :or {sim-fn :jaccard}}]
+  (let [return (query-string forest k string)
+        f (get-sim-fn sim-fn)]
+    (mhu/zip-similarity forest return f)))
 
 (defmethod similarity-k :file
-  [forest k file & {:keys [sim-fn remove-stopwords?]
-                    :or {sim-fn :jaccard remove-stopwords? true}}]
-  (let [return (query-file forest k file :remove-stopwords? remove-stopwords?)
-        f (condp = sim-fn
-            :jaccard jaccard-similarity
-            :cosine cosine-distance
-            :hamming hamming-distance)]
-    (zip-similarity forest return f)))
+  [forest k file & {:keys [sim-fn] :or {sim-fn :jaccard}}]
+  (let [return (query-file forest k file)
+        f (get-sim-fn sim-fn)]
+    (mhu/zip-similarity forest return f)))
 
 (defmethod similarity-k :feature-vec
-  [forest k feature-vector & {:keys [sim-fn]
-                              :or {sim-fn :jaccard}}]
+  [forest k feature-vector & {:keys [sim-fn] :or {sim-fn :jaccard}}]
   (let [return (query-forest forest k feature-vector)
-        f (condp = sim-fn
-            :jaccard jaccard-similarity
-            :cosine cosine-distance
-            :hamming hamming-distance)]
-    (zip-similarity forest return f)))
+        f (get-sim-fn sim-fn)]
+    (mhu/zip-similarity forest return f)))
 
 (defn freeze-forest
   "Serializes forest and saves to a file. Forest should be created using one of the add-*-to-forest functions.
