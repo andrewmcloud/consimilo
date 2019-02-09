@@ -136,7 +136,7 @@ should be made using the same tokenization scheme used to input the items in the
 
 ### Querying a forest with strings, files, or feature-vectors and calculating similarity
 
-consimilo will dispatch to the correct query function based on query type (string, file, collection of features). 
+consimilo will dispatch to the correct query function based on query type (string, file, collection of features). There are 3 similarity functions available for use: `:consine`, `jaccard`, & `hamming`.
 
 ```clojure
 (def similar-items (consimilo/similarity-k 
