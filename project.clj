@@ -1,4 +1,4 @@
-(defproject consimilo "0.1.2"
+(defproject consimilo "0.1.1"
   :description "A Clojure library for querying large data-sets on similarity"
   :url "http://github.com/andrewmcloud/consimilo"
   :license {:name "Apache License 2.0"
