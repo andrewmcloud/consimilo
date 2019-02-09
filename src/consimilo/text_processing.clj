@@ -1,13 +1,12 @@
 (ns consimilo.text-processing
-  (:require [opennlp.nlp :refer [make-tokenizer]]
+  (:require [opennlp.nlp :as nlp]
             [pantomime.extract :as extract]
             [clojure.java.io :as io]
-            [clojure.string :refer [lower-case
-                                    split-lines]]
+            [clojure.string :as s]
             [clojure.tools.logging :as log]))
 
-(def ^:private tokenize (make-tokenizer (io/resource "en-token.bin")))
-(def ^:private stopwords (set (split-lines (slurp (io/resource "stopwords.txt")))))
+(def ^:private tokenize (nlp/make-tokenizer (io/resource "en-token.bin")))
+(def ^:private stopwords (set (s/split-lines (slurp (io/resource "stopwords.txt")))))
 
 (defn- remove-stopwords
   "If remove-stopwords?: returns tokenized-text with stopwords removed, else: returns tokenized-text unaltered"
@@ -19,7 +18,7 @@
 (defn tokenize-text
   "Tokenizes a string of text. If remove-stopwords?: removes stopwords from token collection"
   [text & {:keys [remove-stopwords?] :or {remove-stopwords? true}}]
-  (->> (lower-case text)
+  (->> (s/lower-case text)
        tokenize
        (remove-stopwords remove-stopwords?)))
 

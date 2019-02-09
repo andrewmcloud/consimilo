@@ -51,13 +51,16 @@
   (testing "hamming-distance, number of differing elements between two collections"
     (is (= 3 (hamming-distance [2 1 7 3 8 9 6] [2 2 3 3 7 9 6])))
     (is (= 2 (hamming-distance [1 0 1 1 1 0 1] [1 0 0 1 0 0 1])))
-    (is (= 0 (hamming-distance [1 2 3 4 5 6 7] [1 2 3 4 5 6 7])))))
+    (is (= 0 (hamming-distance [1 2 3 4 5 6 7] [1 2 3 4 5 6 7])))
+    (is (= 4 (hamming-distance [0 1 2 5] [1 4 6 7])))))
 
 (deftest cosine-distance-test
+  (testing "cosine distance between two vectors with same direction"
+    (is (= 0.0 (cosine-distance [1 2 3 4 5] [1 2 3 4 5]))))
+  (testing "cosine distance between two perpendicular vectors"
+    (is (= 90.0 (cosine-distance [0 5] [5 0]))))
   (testing "cosine distance between two different vectors"
-    (is (= 9/100 (/ (Math/round ^float (* 100 (cosine-distance [1 2 3 4 5] [1 2 3 6 7]))) 100))))
-  (testing "cosine distance between two equal vectors"
-    (is (= 0.0 (cosine-distance [1 2 3 4 5] [1 2 3 4 5])))))
+    (is (> 10e-12 (Math/abs ^float  (- 45 (cosine-distance [1 1] [5 0])))))))
 
 (deftest jaccard-test
   (testing "jaccard functionality"
