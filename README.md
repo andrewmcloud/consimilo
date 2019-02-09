@@ -73,8 +73,7 @@ To add a collection of strings to an **existing** forest and **do not remove** s
 ```clojure
 (consimilo/add-strings-to-forest [{:id id1 :features "my sample string 1"}
                                   {:id id2 :features "my sample string 2"}]
-                                 :forest my-forest                        
-                                 :remove-stopwords? false))               ;;updates my-forest in place
+                                 :forest my-forest))               ;;updates my-forest in place
 ```
 
 ##### Adding files to a forest

@@ -6,4 +6,3 @@
 (deftest get-hash-bigint-test
   (testing "get-hash-bigint returns type bigint"
     (is (= true (instance? BigInt (get-hash-bigint "andrew"))))))
-

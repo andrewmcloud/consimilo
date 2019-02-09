@@ -48,7 +48,7 @@
   "computes cosine distance between two positive vectors of equal length, v1 and v2 "
   [v1 v2]
   (if (= (count v1) (count v2))
-    (/ (* 2 (Math/acos (similarity v1 v2)))
+    (/ (* 180 (Math/acos (similarity v1 v2)))
        (Math/PI))
     (log/error "cannot compute cosine-distance between 2 vectors of different length")))
 

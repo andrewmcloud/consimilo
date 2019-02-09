@@ -37,7 +37,6 @@
   parameters. The feature vector will be minhashed and inserted into the lsh-forest.
 
   Optional Keyword Arguments: :forest - add to an existing forest; default: create new forest
-                              :remove-stopwords? - if true: remove stopwords; default: true
 
   Note: items should be loaded into the forest as few times as possible in large chunks. An expensive
   sort called after items are added to the forest to enable ~log(n) queries."
@@ -45,9 +44,7 @@
   [feature-coll & {:keys [forest] :or {forest (f/new-forest)}}]
   (if (util/valid-input? feature-coll string?)
     (add-all-to-forest forest
-                       (map #(assoc % :features
-                                      (text/tokenize-text (:features %)))
-                            feature-coll))
+                       (map #(assoc % :features (text/tokenize-text (:features %))) feature-coll))
     (log/warn "invalid input, feature-coll must be a collection of maps, each having keys :id and :features;
                :features must be a string")))
 
@@ -58,7 +55,6 @@
   parameters. The feature vector is minhashed and inserted into the lsh-forest.
 
   Optional Keyword Arguments: :forest - add to an existing forest; default: create new forest
-                              :remove-stopwords? - if true: remove stopwords; default: true
 
   Note: items should be loaded into the forest as few times as possible in large chunks. An expensive
   sort called after items are added to the forest to enable ~log(n) queries."
@@ -80,11 +76,7 @@
   "Convenience method for querying the forest for top-k similar strings. forest is the forest to be
   queried. string will be converted to a feature vector through tokenization / shingling per the optional
   parameters. The feature vector is minhashed and used to query the forest. K is the number of results
-  (top-k most similar items).
-
-  Optional Keyword Arguments: :remove-stopwords? - if true: remove stopwords; default: true
-
-  Note: for best results query the forest utilizing the same tokenization scheme used to create it"
+  (top-k most similar items)."
   [forest k string]
   (query-forest forest k (text/tokenize-text string)))
 
@@ -92,11 +84,7 @@
   "Convenience method for querying the forest for top-k similar files. Forest is the forest to be
   queried. File is converted to a feature vector through text-extraction, tokenizating / shingling
   per the optional arguments. The feature vector is minhashed and used to query the forest. k is the number
-  of results (top-k most similar items).
-
-  Optional Keyword Arguments: :remove-stopwords? - if true: remove stopwords; default: true
-
-  Note: for best results query the forest utilizing the same tokenization scheme used to create it"
+  of results (top-k most similar items)."
   [forest k file]
   (query-string forest k (text/extract-text file)))
 
@@ -104,7 +92,7 @@
   [key]
   (condp = key
     :jaccard mhu/jaccard-similarity
-    :consine mhu/cosine-distance
+    :cosine mhu/cosine-distance
     :hamming mhu/hamming-distance))
 
 (defmulti similarity-k
