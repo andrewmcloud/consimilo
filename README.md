@@ -20,7 +20,7 @@ the enormous increase in query speed. More information can be found in chapter 3
 Add consimilo as a dependency in your project.clj:
 
 ```clojure
-[consimilo "0.1.0"]
+[consimilo "0.1.1"]
 ```
 
 The main methods you are likely to need are all located in [`core.clj`](./src/consimilo/core.clj). 
